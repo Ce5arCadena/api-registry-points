@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\School;
+use App\Http\Services\SchoolService;
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
+use Illuminate\Http\JsonResponse;
 
 class SchoolController extends Controller
 {
+    public function __construct(protected SchoolService $schoolService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -27,9 +31,16 @@ class SchoolController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSchoolRequest $request)
+    public function store(StoreSchoolRequest $request): JsonResponse
     {
-        //
+        $result = $this->schoolService->saveSchool($request->validated());
+        return response()->json([
+            'message' => 'Colegio registrado éxitosamente.',
+            'errors' => [],
+            'data' => [
+                'school' => $result['school']
+            ]
+        ]);
     }
 
     /**

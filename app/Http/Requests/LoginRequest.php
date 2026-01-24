@@ -24,20 +24,29 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => 'required|email',
-            'password' =>  Password::min(8)
+            'password' => [
+                'required',
+                Password::min(8)
                 ->letters()
                 ->mixedCase()
                 ->numbers()
                 ->symbols()
                 ->uncompromised()
+            ]
         ];
     }
 
     public function messages() {
         return [
             'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El correo electrónico no tiene un formato válido.',
+            'email.email'    => 'El correo electrónico no tiene un formato válido.',
             'password.required' => 'La contraseña es obligatoria.',
+            'password.min'      => 'La contraseña debe tener al menos :min caracteres.',
+            'password.letters'  => 'La contraseña debe contener letras.',
+            'password.mixed'    => 'La contraseña debe tener mayúsculas y minúsculas.',
+            'password.numbers'  => 'La contraseña debe incluir al menos un número.',
+            'password.symbols'  => 'La contraseña debe incluir al menos un símbolo.',
+            'password.uncompromised' => 'La contraseña es insegura por filtraciones previas.',
         ];
     }
 }

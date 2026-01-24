@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     public function createSuperAdmin() {
-        dump(config('services.admin.email'), config('services.admin.pass'));
         $userAdmin = new User;
         $userAdmin->email = config('services.admin.email');
         $userAdmin->password = Hash::make(config('services.admin.pass'));

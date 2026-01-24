@@ -7,20 +7,26 @@ use Illuminate\Auth\AuthenticationException;
 
 class AuthService {
     public function login(array $data) {
-        $user = User::where('email', trim($data['email']))->where('status', 'ACTIVE')->first();
-        if (!$user || !Hash::check(trim($data['password']), $user->password)) {
-            throw new AuthenticationException('Usuario y/o contraseña incorrectos.');
-        }
+        $user = $this->existUser($data);
 
         $token = '';
         if ($user->role === 'SUPERADMIN') {
             $token = $user->createToken('api-token', ['admin:schools'])->plainTextToken;    
         } else {
-            $token = $user->createToken()->plainTextToken;
+            $token = $user->createToken('api-token')->plainTextToken;
         }
 
         return [
             'token' => $token
         ];
+    }
+
+    public function existUser(array $data): User | AuthenticationException  {
+        $user = User::where('email', trim($data['email']))->where('status', 'ACTIVE')->first();
+        if (!$user || !Hash::check(trim($data['password']), $user->password)) {
+            throw new AuthenticationException('Usuario y/o contraseña incorrectos.');
+        }
+
+        return $user;
     }
 }
