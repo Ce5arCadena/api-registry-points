@@ -64,7 +64,14 @@ class SchoolController extends Controller
      */
     public function update(UpdateSchoolRequest $request, School $school)
     {
-        //
+        $result = $this->schoolService->updateSchool($request->validated(), $school);
+        return response()->json([
+            'message' => 'Colegio actualizado éxitosamente.',
+            'errors'=> [],
+            'data' => [
+                'school' => $result
+            ]
+        ]);
     }
 
     /**

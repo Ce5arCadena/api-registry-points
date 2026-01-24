@@ -4,6 +4,7 @@ namespace App\Http\Services;
 use App\Models\User;
 use App\Models\School;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\UserResource;
 use Illuminate\Validation\ValidationException;
 
 class SchoolService {
@@ -27,5 +28,40 @@ class SchoolService {
         return [
             'school' => $newSchool
         ];
+    }
+
+    public function updateSchool(array $fields, School $school) {
+        if (empty($fields)) {
+            throw ValidationException::withMessages([
+                'errors' => ['Debe enviar al menos un campo.']
+            ]);
+        }
+        
+        $user = User::findOrFail($school->user_id);
+        if (isset($fields['email'])) {
+            $email = trim($fields['email']);
+
+            $exists = User::where('email', $email)
+                ->where('school_id', $school->id)
+                ->where('status', 'ACTIVE')
+                ->where('id', '!=', $user->id)
+                ->exists();
+
+            if ($exists) {
+                throw ValidationException::withMessages([
+                    'email' => ['El correo ya está en uso.']
+                ]);
+            }
+
+            $user->email = $email;
+        }
+
+        if (isset($fields['password'])) {
+            $user->password = Hash::make($fields['password']);
+        }
+
+        $user->save();
+
+        return new UserResource($user);
     }
 }

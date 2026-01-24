@@ -20,4 +20,5 @@ Route::middleware(['auth:sanctum', 'abilities:admin:schools'])
     ->controller(SchoolController::class)
     ->group(function () {
         Route::post('/', 'store');
+        Route::patch('{school}', 'update');
     });
