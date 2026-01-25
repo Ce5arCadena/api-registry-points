@@ -3,6 +3,7 @@ namespace App\Http\Services;
 
 use App\Models\User;
 use App\Models\School;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserResource;
 use Illuminate\Validation\ValidationException;
@@ -63,5 +64,19 @@ class SchoolService {
         $user->save();
 
         return new UserResource($user);
+    }
+
+    public function deleteSchool($school) {
+        $school = School::where('status', 'ACTIVE')->where('id', $school)->first();
+        if (!$school) {
+            throw new ModelNotFoundException('No se pudo encontrar el colegio especificado.');
+        }
+
+        $school->user->update(['status'=> 'INACTIVE']);
+        $school->update([
+            'status'=> 'INACTIVE'
+        ]);
+
+        return new UserResource($school);
     }
 }

@@ -77,8 +77,15 @@ class SchoolController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(School $school)
+    public function destroy($school)
     {
-        //
+        $result = $this->schoolService->deleteSchool($school);
+        return response()->json([
+            'message' => 'Colegio eliminado éxitosamente.',
+            'errors'=> [],
+            'data' => [
+                'school' => $result
+            ]
+        ]);
     }
 }

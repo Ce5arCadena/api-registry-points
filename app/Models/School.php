@@ -26,4 +26,8 @@ class School extends Model
             set: fn (string $value) => Str::title(trim($value)),
         );
     }
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }
