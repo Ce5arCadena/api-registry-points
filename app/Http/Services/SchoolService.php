@@ -3,10 +3,11 @@ namespace App\Http\Services;
 
 use App\Models\User;
 use App\Models\School;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\SchoolResource;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SchoolService {
     public function saveSchool(array $fields) {
@@ -66,6 +67,15 @@ class SchoolService {
         return new UserResource($user);
     }
 
+    public function showSchool($school) {
+        $school = School::where('status', 'ACTIVE')->where('id', $school)->with('user')->first();
+        if (!$school) {
+            throw new ModelNotFoundException('No se pudo encontrar el colegio especificado.');
+        }
+
+        return new SchoolResource($school);
+    }
+
     public function deleteSchool($school) {
         $school = School::where('status', 'ACTIVE')->where('id', $school)->first();
         if (!$school) {
@@ -77,6 +87,6 @@ class SchoolService {
             'status'=> 'INACTIVE'
         ]);
 
-        return new UserResource($school);
+        return new SchoolResource($school);
     }
 }

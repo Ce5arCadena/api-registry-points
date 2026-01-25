@@ -20,6 +20,7 @@ Route::middleware(['auth:sanctum', 'abilities:admin:schools'])
     ->controller(SchoolController::class)
     ->group(function () {
         Route::post('/', 'store');
+        Route::get('{school}', 'show');
         Route::patch('{school}', 'update');
         Route::delete('{school}', 'destroy');
     });
