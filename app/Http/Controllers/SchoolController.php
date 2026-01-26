@@ -17,7 +17,7 @@ class SchoolController extends Controller
      */
     public function index()
     {
-        //
+        return $this->schoolService->getAll();
     }
 
     /**

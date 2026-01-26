@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Services;
 
+use App\Http\Resources\SchoolCollection;
 use App\Models\User;
 use App\Models\School;
 use Illuminate\Support\Facades\Hash;
@@ -88,5 +89,14 @@ class SchoolService {
         ]);
 
         return new SchoolResource($school);
+    }
+
+    public function getAll() {
+        $schools = School::where('status', 'ACTIVE')->with('user')->paginate()->toResourceCollection();
+        
+        return $schools->additional([
+            'message' => 'Lista de colegios.',
+            'errors' => []
+        ]);
     }
 }

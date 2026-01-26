@@ -19,6 +19,7 @@ Route::middleware(['auth:sanctum', 'abilities:admin:schools'])
     ->prefix('schools')
     ->controller(SchoolController::class)
     ->group(function () {
+        Route::get('/', 'index');
         Route::post('/', 'store');
         Route::get('{school}', 'show');
         Route::patch('{school}', 'update');
