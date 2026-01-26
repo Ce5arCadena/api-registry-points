@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grade;
+use App\Http\Services\GradeService;
 use App\Http\Requests\StoreGradeRequest;
 use App\Http\Requests\UpdateGradeRequest;
 
 class GradeController extends Controller
 {
+    public function __construct(protected GradeService $gradeService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +32,10 @@ class GradeController extends Controller
      */
     public function store(StoreGradeRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $user = $request->user();
+
+        return $this->gradeService->store($validated, $user);
     }
 
     /**

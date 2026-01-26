@@ -2,9 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GradeController;
+use App\Http\Controllers\SchoolController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -24,4 +25,12 @@ Route::middleware(['auth:sanctum', 'abilities:admin:schools'])
         Route::get('{school}', 'show');
         Route::patch('{school}', 'update');
         Route::delete('{school}', 'destroy');
+    });
+    
+// Rutas de grados
+Route::middleware(['auth:sanctum','abilities:school:grades'])
+    ->prefix('grades')
+    ->controller(GradeController::class)
+    ->group(function() {
+        Route::post('/', 'store');
     });

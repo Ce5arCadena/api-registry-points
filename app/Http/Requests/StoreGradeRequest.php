@@ -11,7 +11,7 @@ class StoreGradeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class StoreGradeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => "required|max:40"
+        ];
+    }
+
+    public function messages() {
+        return [
+            'name.required' => 'El nombre del grado es obligatorio.',
         ];
     }
 }

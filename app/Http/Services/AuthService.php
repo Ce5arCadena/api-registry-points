@@ -12,6 +12,13 @@ class AuthService {
         $token = '';
         if ($user->role === 'SUPERADMIN') {
             $token = $user->createToken('api-token', ['admin:schools'])->plainTextToken;    
+        } else if( $user->role === 'SCHOOL') {
+            $token = $user->createToken('api-token', [
+                'school:students',
+                'school:grades',
+                'school:subjects',
+                'school:teachers'
+            ])->plainTextToken;
         } else {
             $token = $user->createToken('api-token')->plainTextToken;
         }
