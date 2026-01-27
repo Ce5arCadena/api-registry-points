@@ -57,9 +57,12 @@ class GradeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateGradeRequest $request, Grade $grade)
+    public function update(StoreGradeRequest $request, $grade)
     {
-        //
+        $validated = $request->validated();
+        $user = $request->user();
+
+        return $this->gradeService->update($validated, $grade, $user);
     }
 
     /**
