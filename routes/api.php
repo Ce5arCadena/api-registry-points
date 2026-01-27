@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum','abilities:school:grades'])
     ->prefix('grades')
     ->controller(GradeController::class)
     ->group(function() {
+        Route::get('/', 'index');
         Route::post('/', 'store');
         Route::get('{grade}', 'show');
         Route::put('{grade}', 'update');

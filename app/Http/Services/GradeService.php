@@ -10,6 +10,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class GradeService {
     public function __construct() {}
 
+    public function getAll(User $user) {
+        $grades = Grade::where("school_id", $user->school_id)
+            ->where('status', 'ACTIVE')
+            ->paginate()
+            ->toResourceCollection();
+
+        return $grades->additional([
+            'message' => 'Lista de cursos.',
+            'errors' => []
+        ]);
+    }
+
     public function store(array $fields, User $user) {
         if (empty($fields) || !$user) throw new AuthorizationException("No está autorizado.");
 

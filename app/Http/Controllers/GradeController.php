@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Grade;
 use App\Http\Services\GradeService;
-use App\Http\Requests\StoreGradeRequest;
-use App\Http\Requests\UpdateGradeRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreGradeRequest;
 
 class GradeController extends Controller
 {
@@ -18,7 +16,8 @@ class GradeController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        return $this->gradeService->getAll($user);
     }
 
     /**
