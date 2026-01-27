@@ -56,6 +56,20 @@ class GradeService {
         ]);
     }
 
+    public function showGrade(int $grade, User $user) {
+        $grade = Grade::where('id', $grade)->where('school_id', $user->school_id)->firstOr(function () {
+            throw new NotFoundHttpException('No existe el curso especificado');
+        });
+
+        return response()->json([
+            'message' => 'Curso listado.',
+            'errors' => [],
+            'data' => [
+                $grade
+            ]
+        ]);
+    }
+
     public function destroy(int $grade, User $user) {
         $grade = Grade::where('id', $grade)->where('school_id', $user->school_id)->firstOr(function () {
             throw new NotFoundHttpException('No existe el curso especificado');

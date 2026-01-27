@@ -43,9 +43,10 @@ class GradeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Grade $grade)
+    public function show($grade)
     {
-        //
+        $user = Auth::user();
+        return $this->gradeService->showGrade($grade, $user);
     }
 
     /**
