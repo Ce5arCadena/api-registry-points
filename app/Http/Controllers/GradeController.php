@@ -6,6 +6,8 @@ use App\Models\Grade;
 use App\Http\Services\GradeService;
 use App\Http\Requests\StoreGradeRequest;
 use App\Http\Requests\UpdateGradeRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GradeController extends Controller
 {
@@ -33,7 +35,7 @@ class GradeController extends Controller
     public function store(StoreGradeRequest $request)
     {
         $validated = $request->validated();
-        $user = $request->user();
+        $user = Auth::user();
 
         return $this->gradeService->store($validated, $user);
     }
@@ -60,7 +62,7 @@ class GradeController extends Controller
     public function update(StoreGradeRequest $request, $grade)
     {
         $validated = $request->validated();
-        $user = $request->user();
+        $user = Auth::user();
 
         return $this->gradeService->update($validated, $grade, $user);
     }
@@ -68,8 +70,9 @@ class GradeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Grade $grade)
+    public function destroy(int $grade)
     {
-        //
+        $user = Auth::user();
+        return $this->gradeService->destroy($grade, $user);
     }
 }

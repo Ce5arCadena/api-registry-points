@@ -55,4 +55,19 @@ class GradeService {
             ]
         ]);
     }
+
+    public function destroy(int $grade, User $user) {
+        $grade = Grade::where('id', $grade)->where('school_id', $user->school_id)->firstOr(function () {
+            throw new NotFoundHttpException('No existe el curso especificado');
+        });
+        
+        $grade->update([
+            'status' => 'INACTIVE'
+        ]);
+
+        return response()->json([
+            'message' => 'Curso eliminado éxitosamente.',
+            'errors' => []
+        ]);
+    }
 }

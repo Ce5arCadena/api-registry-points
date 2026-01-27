@@ -34,4 +34,5 @@ Route::middleware(['auth:sanctum','abilities:school:grades'])
     ->group(function() {
         Route::post('/', 'store');
         Route::put('{grade}', 'update');
+        Route::delete('{grade}', 'destroy');
     });
