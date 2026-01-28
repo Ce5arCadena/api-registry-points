@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\TeacherController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -37,4 +38,16 @@ Route::middleware(['auth:sanctum','abilities:school:grades'])
         Route::get('{grade}', 'show');
         Route::put('{grade}', 'update');
         Route::delete('{grade}', 'destroy');
+    });
+
+// Rutas de profesores
+Route::middleware(['auth:sanctum','abilities:school:teachers'])
+    ->prefix('teachers')
+    ->controller(TeacherController::class)
+    ->group(function() {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{teacher}', 'show');
+        Route::put('{teacher}', 'update');
+        Route::delete('{teacher}', 'destroy');
     });

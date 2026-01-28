@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Teacher;
+use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
+    public function __construct(protected TeacherService $teacherService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +33,9 @@ class TeacherController extends Controller
      */
     public function store(StoreTeacherRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $userAuth = Auth::user();
+        return $this->teacherService->saveTeacher($validated, $userAuth);
     }
 
     /**
