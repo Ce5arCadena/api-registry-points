@@ -113,33 +113,52 @@ class TeacherService {
         ]);
     }
 
-    public function showSchool($school) {
-        $school = School::where('status', 'ACTIVE')->where('id', $school)->with('user')->first();
-        if (!$school) {
-            throw new ModelNotFoundException('No se pudo encontrar el colegio especificado.');
-        }
+    public function showTeacher(int $teacher, User $user) {
+        $teacher = Teacher::where('status', 'ACTIVE')
+            ->where('id', $teacher)
+            ->where('school_id', $user->school_id) 
+            ->firstOr(function () {
+                throw new ModelNotFoundException('No se pudo encontrar el maestro especificado.');
+            });
 
-        return new SchoolResource($school);
+        return response()->json([
+            'message' => 'Maestro encontrado.',
+            'errors' => [],
+            'data' => [
+                'teacher' => new TeacherResource($teacher)
+            ]
+        ]);
     }
 
-    public function deleteSchool($school) {
-        $school = School::where('status', 'ACTIVE')->where('id', $school)->first();
-        if (!$school) {
-            throw new ModelNotFoundException('No se pudo encontrar el colegio especificado.');
-        }
+    public function deleteTeacher(int $teacher, User $user) {
+        $teacher = Teacher::where('status', 'ACTIVE')
+            ->where('id', $teacher)
+            ->where('school_id', $user->school_id)
+            ->firstOr(function () {
+                throw new ModelNotFoundException('No se pudo encontrar el maestro especificado.');
+            });
 
-        $school->user->update(['status'=> 'INACTIVE']);
-        $school->update([
+        $teacher->user->update(['status'=> 'INACTIVE']);
+        $teacher->update([
             'status'=> 'INACTIVE'
         ]);
 
-        return new SchoolResource($school);
+        return response()->json([
+            'message' => 'Maestro eliminado éxitosamente.',
+            'errors' => [],
+            'data' => [
+                'teacher' => new TeacherResource($teacher)
+            ]
+        ]);
     }
 
-    public function getAll() {
-        $schools = School::where('status', 'ACTIVE')->with('user')->paginate()->toResourceCollection();
+    public function getAll(User $user) {
+        $teachers = Teacher::where('status', 'ACTIVE')
+            ->where('school_id', $user->school_id)
+            ->paginate()
+            ->toResourceCollection();
         
-        return $schools->additional([
+        return $teachers->additional([
             'message' => 'Lista de colegios.',
             'errors' => []
         ]);

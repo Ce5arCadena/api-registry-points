@@ -17,7 +17,8 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        return $this->teacherService->getAll($user);
     }
 
     /**
@@ -41,9 +42,10 @@ class TeacherController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Teacher $teacher)
+    public function show(int $teacher)
     {
-        //
+        $user = Auth::user();
+        return $this->teacherService->showTeacher($teacher, $user);
     }
 
     /**
@@ -67,8 +69,9 @@ class TeacherController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Teacher $teacher)
+    public function destroy(int $teacher)
     {
-        //
+        $user = Auth::user();
+        return $this->teacherService->deleteTeacher($teacher, $user);
     }
 }
