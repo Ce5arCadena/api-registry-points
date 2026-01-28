@@ -20,4 +20,8 @@ class Teacher extends Model
     ];
 
     protected $table = 'teachers';
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

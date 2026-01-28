@@ -57,9 +57,11 @@ class TeacherController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTeacherRequest $request, Teacher $teacher)
+    public function update(UpdateTeacherRequest $request, int $teacher)
     {
-        //
+        $validated = $request->validated();
+        $user = Auth::user();
+        return $this->teacherService->updateTeacher($validated,  $teacher, $user);
     }
 
     /**

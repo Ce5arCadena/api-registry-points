@@ -7,9 +7,11 @@ use App\Models\Teacher;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\SchoolResource;
+use App\Http\Resources\TeacherResource;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TeacherService {
     public function saveTeacher(array $fields, User $user) {
@@ -18,6 +20,13 @@ class TeacherService {
             ->where('status', 'ACTIVE')
             ->first();
         if ($teacherByName) throw new ConflictHttpException('Ya existe un maestro con el mismo nombre. Use otro.');
+
+        $userExist = User::where('email', $fields['email'])
+            ->where('school_id', $user->school_id)
+            ->where('status', 'ACTIVE')
+            ->first();
+        
+            if (isset($userExist)) throw new ConflictHttpException('No puede usar el correo especificado.');
 
         $userTeacher = new User;
         $userTeacher->email = trim($fields["email"]);
@@ -37,7 +46,7 @@ class TeacherService {
         $newTeacher->save();
 
         return response()->json([
-            'message' => 'Curso registrado éxitosamente.',
+            'message' => 'Maestro registrado éxitosamente.',
             'errors' => [],
             'data' => [
                 'teacher' => $newTeacher
@@ -45,39 +54,63 @@ class TeacherService {
         ]);
     }
 
-    public function updateSchool(array $fields, School $school) {
+    public function updateTeacher(array $fields, int $teacher, User $user) {
         if (empty($fields)) {
             throw ValidationException::withMessages([
                 'errors' => ['Debe enviar al menos un campo.']
             ]);
         }
         
-        $user = User::findOrFail($school->user_id);
+        $teacher = Teacher::where('id', $teacher)
+            ->where('school_id', $user->school_id)
+            ->where('status', 'ACTIVE')
+            ->firstOr(function () {
+                throw new NotFoundHttpException('No existe el maestro solicitado');
+            });
+
         if (isset($fields['email'])) {
             $email = trim($fields['email']);
 
-            $exists = User::where('email', $email)
-                ->where('school_id', $school->id)
+            $userExist = User::where('email', $email)
+                ->where('school_id', $user->school_id)
                 ->where('status', 'ACTIVE')
-                ->where('id', '!=', $user->id)
-                ->exists();
+                ->first();
+            
+                if (isset($userExist) && $userExist->id !== $teacher->id) throw new ConflictHttpException('No puede usar el correo especificado.');
 
-            if ($exists) {
-                throw ValidationException::withMessages([
-                    'email' => ['El correo ya está en uso.']
-                ]);
-            }
-
-            $user->email = $email;
+            $teacher->user->email = $email;
         }
 
         if (isset($fields['password'])) {
-            $user->password = Hash::make($fields['password']);
+            $teacher->user->password = Hash::make($fields['password']);
         }
 
-        $user->save();
+        if (isset($fields['full_name'])) {
+            $teacherByName = Teacher::where("full_name", $fields["full_name"])
+                ->where('school_id', $user->school_id)
+                ->where('status', 'ACTIVE')
+                ->first();
+            if (isset($teacherByName) && $teacherByName->id !== $teacher->id) throw new ConflictHttpException('Ya existe un maestro con el mismo nombre. Use otro.');
+            $teacher->full_name = trim($fields['full_name']);
+        }
 
-        return new UserResource($user);
+        if (isset($fields['document'])) {
+            $teacher->document = trim($fields['document']);
+        }
+
+        if (isset($fields['phone'])) {
+            $teacher->phone = trim($fields['phone']);
+        }
+
+        $teacher->save();
+
+        return response()->json([
+            'message' => 'Maestro actualizado éxitosamente.',
+            'errors' => [],
+            'data' => [
+                'teacher' => new TeacherResource($teacher)
+            ]
+        ]);
     }
 
     public function showSchool($school) {
