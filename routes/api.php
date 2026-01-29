@@ -6,12 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/auth/create-admin', [UserController::class, 'createSuperAdmin']);
@@ -50,4 +46,16 @@ Route::middleware(['auth:sanctum','abilities:school:teachers'])
         Route::get('{teacher}', 'show');
         Route::put('{teacher}', 'update');
         Route::delete('{teacher}', 'destroy');
+    });
+
+// Rutas de materias
+Route::middleware(['auth:sanctum','abilities:school:teachers'])
+    ->prefix('subjects')
+    ->controller(SubjectController::class)
+    ->group(function() {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{subject}', 'show');
+        Route::put('{subject}', 'update');
+        Route::delete('{subject}', 'destroy');
     });

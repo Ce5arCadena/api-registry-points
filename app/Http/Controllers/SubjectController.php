@@ -3,25 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
+use App\Http\Services\SubjectService;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
+use Illuminate\Support\Facades\Auth;
 
 class SubjectController extends Controller
 {
+    public function __construct(protected SubjectService $subjectService) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        
     }
 
     /**
@@ -29,7 +25,9 @@ class SubjectController extends Controller
      */
     public function store(StoreSubjectRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $user = Auth::user();
+        return $this->subjectService->store($validated, $user);
     }
 
     /**
