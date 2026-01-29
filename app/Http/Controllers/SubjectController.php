@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Services\SubjectService;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
-use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SubjectController extends Controller
 {
@@ -23,11 +24,18 @@ class SubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSubjectRequest $request)
+    public function store(StoreSubjectRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $user = Auth::user();
-        return $this->subjectService->store($validated, $user);
+        try {
+            $validated = $request->validated();
+            $user = Auth::user();
+            return $this->subjectService->store($validated, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al crear la materia.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
@@ -49,9 +57,18 @@ class SubjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSubjectRequest $request, Subject $subject)
+    public function update(UpdateSubjectRequest $request, int $subject): JsonResponse
     {
-        //
+        try {
+            $user = Auth::user();
+            $request = $request->validated();
+            return $this->subjectService->update($request, $subject, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al editar la materia.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

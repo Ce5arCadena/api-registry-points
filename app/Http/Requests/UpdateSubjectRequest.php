@@ -11,7 +11,7 @@ class UpdateSubjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,16 @@ class UpdateSubjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => "sometimes|required|string|max:255"
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            "name.required" => "El nombre es obligatorio",
+            "name.string" => "El nombre debe ser un texto válido",
+            "name.max" => "El nombre no puede exceder los 255 caracteres"
         ];
     }
 }

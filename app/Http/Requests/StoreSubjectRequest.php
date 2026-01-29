@@ -22,9 +22,7 @@ class StoreSubjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => "required|string|max:255",
-            "teacher" => "required|integer|min:1",
-            "grade" => "required|integer|min:1"
+            "name" => "required|string|max:255"
         ];
     }
 
@@ -33,13 +31,7 @@ class StoreSubjectRequest extends FormRequest
         return [
             "name.required" => "El nombre es obligatorio",
             "name.string" => "El nombre debe ser un texto válido",
-            "name.max" => "El nombre no puede exceder los 255 caracteres",
-            "teacher.required" => "El ID del profesor es obligatorio",
-            "teacher.integer" => "El ID del profesor debe ser un número entero",
-            "teacher.min" => "El ID del profesor debe ser mayor a 0",
-            "grade.required" => "El ID del grado es obligatorio",
-            "grade.integer" => "El ID del grado debe ser un número entero",
-            "grade.min" => "El ID del grado debe ser mayor a 0"
+            "name.max" => "El nombre no puede exceder los 255 caracteres"
         ];
     }
 }

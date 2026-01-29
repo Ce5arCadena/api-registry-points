@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\Subject;
+
+class SubjectRepository {
+    public function getById(int $id, int $schoolId) {
+        return Subject::where('status', 'ACTIVE')
+            ->where('id', trim($id))
+            ->where('school_id', $schoolId)
+            ->first();
+    }
+
+    public function getByName(string $name, int $schoolId) {
+        return Subject::where('status', 'ACTIVE')
+            ->where('name', trim($name))
+            ->where('school_id', $schoolId)
+            ->first();
+    }
+}
