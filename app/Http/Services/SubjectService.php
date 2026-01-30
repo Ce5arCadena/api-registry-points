@@ -54,13 +54,33 @@ class SubjectService {
             ], JsonResponse::HTTP_CONFLICT);
         }
 
-        $subject->update([
+        $this->subjectRepository->update($subject->id, $user->school_id, [
             'name' => trim($fields['name'])
         ]);
+
         return response()->json([
             'message' => 'Materia actualizada éxitosamente.',
             'errors' => [],
-            'data' => [new SubjectResource($subject)]
+            'data' => [new SubjectResource($subject->fresh())]
+        ], JsonResponse::HTTP_OK);
+    }
+
+    public function delete(int $subjectId, User $user): JsonResponse {
+        $subject = $this->subjectRepository->getById($subjectId, $user->school_id);
+        if (!$subject) {
+            return response()->json([
+                'message' => 'Error al consultar la materia.',
+                'errors' => ['La materia no existe'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $this->subjectRepository->update($subjectId, $user->school_id, [
+            'status' => 'INACTIVE'
+        ]);
+        return response()->json([
+            'message' => 'Materia eliminada éxitosamente.',
+            'errors' => [],
+            'data' => [new SubjectResource($subject->fresh())]
         ], JsonResponse::HTTP_OK);
     }
 }

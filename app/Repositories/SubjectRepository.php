@@ -18,4 +18,8 @@ class SubjectRepository {
             ->where('school_id', $schoolId)
             ->first();
     }
+
+    public function update(int $subjectId, int $schoolId, array $data) {
+        return $this->getById($subjectId, $schoolId)->update($data);
+    }
 }
