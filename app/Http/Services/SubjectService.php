@@ -2,38 +2,33 @@
 
 namespace App\Http\Services;
 
-use App\Http\Resources\SubjectResource;
 use App\Models\User;
-use App\Models\Grade;
 use App\Models\Subject;
-use App\Models\Teacher;
+use App\Http\Resources\SubjectResource;
 use App\Repositories\SubjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SubjectService {
     public function __construct(protected SubjectRepository $subjectRepository) {}
 
     public function store(array $fields, User $user) {
-        $subjectByNameExists = Subject::where('status', 'ACTIVE')
-            ->where('name', trim($fields['name']))
-            ->where('school_id', $user->school_id)
-            ->exists();
-        
-        if ($subjectByNameExists) throw new ConflictHttpException('Ya existe una materia con el mismo nombre. Use otro.');
-
-        $newSubject = new Subject;
-        $newSubject->name = trim($fields['name']);
-        $newSubject->school_id = $user->school_id;
-        $newSubject->save();
+        $subjectByName = $this->subjectRepository->getByName($fields['name'], $user->school_id);
+        if ($subjectByName) {
+            return response()->json([
+                'message' => 'Error al crear la materia.',
+                'errors' => ['Ya existe una materia con el mismo nombre. Use otro.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        }
+         
+        $newSubject = $this->subjectRepository->create([
+            'name'=> $fields['name'],
+            'school_id' => $user->school_id
+        ]);
 
         return response()->json([
             'message' => 'Materia creada éxitosamente.',
-            'errors' => [],
-            'data' => [
-                'subject' => $newSubject
-            ]
+            'data' => [ new SubjectResource($newSubject) ]
         ]);
     }
 

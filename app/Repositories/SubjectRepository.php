@@ -22,4 +22,8 @@ class SubjectRepository {
     public function update(int $subjectId, int $schoolId, array $data) {
         return $this->getById($subjectId, $schoolId)->update($data);
     }
+
+    public function create(array $data): Subject {
+        return Subject::create($data);
+    }
 }
