@@ -28,7 +28,7 @@ class SubjectService {
 
         return response()->json([
             'message' => 'Materia creada éxitosamente.',
-            'data' => [ new SubjectResource($newSubject) ]
+            'data' => new SubjectResource($newSubject)
         ]);
     }
 
@@ -55,8 +55,22 @@ class SubjectService {
 
         return response()->json([
             'message' => 'Materia actualizada éxitosamente.',
-            'errors' => [],
-            'data' => [new SubjectResource($subject->fresh())]
+            'data' => new SubjectResource($subject->fresh())
+        ], JsonResponse::HTTP_OK);
+    }
+
+    public function getSubject(int $subjectId, User $user): JsonResponse {
+        $subject = $this->subjectRepository->getById($subjectId, $user->school_id);
+        if (!$subject) {
+            return response()->json([
+                'message' => 'Error al consultar la materia.',
+                'errors' => ['La materia no existe'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'message' => 'Materia encontrada.',
+            'data' => new SubjectResource($subject)
         ], JsonResponse::HTTP_OK);
     }
 
@@ -74,8 +88,7 @@ class SubjectService {
         ]);
         return response()->json([
             'message' => 'Materia eliminada éxitosamente.',
-            'errors' => [],
-            'data' => [new SubjectResource($subject->fresh())]
+            'data' => new SubjectResource($subject->fresh())
         ], JsonResponse::HTTP_OK);
     }
 }
