@@ -26,4 +26,10 @@ class UserRepository {
             ->where('id', '!=', $userId)
             ->exists();
     }
+
+    public function userByEmail(string $email, int $schoolId) {
+        return User::where('email', $email)
+            ->where('school_id', $schoolId)
+            ->first();
+    }
 }

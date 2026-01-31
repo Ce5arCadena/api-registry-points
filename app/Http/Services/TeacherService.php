@@ -2,55 +2,66 @@
 namespace App\Http\Services;
 
 use App\Models\User;
-use App\Models\School;
 use App\Models\Teacher;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\UserResource;
-use App\Http\Resources\SchoolResource;
 use App\Http\Resources\TeacherResource;
+use App\Repositories\TeacherRepository;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TeacherService {
-    public function saveTeacher(array $fields, User $user) {
-        $teacherByName = Teacher::where("full_name", $fields["full_name"])
-            ->where('school_id', $user->school_id)
-            ->where('status', 'ACTIVE')
-            ->first();
-        if ($teacherByName) throw new ConflictHttpException('Ya existe un maestro con el mismo nombre. Use otro.');
+    public function __construct(
+        protected UserRepository $userRepository,
+        protected TeacherRepository $teacherRepository
+    ) {}
 
-        $userExist = User::where('email', $fields['email'])
-            ->where('school_id', $user->school_id)
-            ->where('status', 'ACTIVE')
-            ->first();
-        
-            if (isset($userExist)) throw new ConflictHttpException('No puede usar el correo especificado.');
+    public function saveTeacher(array $fields, User $user): JsonResponse {
+        $teacherByName = $this->teacherRepository->getTeacherByName($fields["full_name"], $user->school_id);
+        if ($teacherByName) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['Ya existe un maestro con el mismo nombre. Use otro.'],
+            ]);
+        }
 
-        $userTeacher = new User;
-        $userTeacher->email = trim($fields["email"]);
-        $userTeacher->password = Hash::make($fields["password"]);
-        $userTeacher->role = "TEACHER";
-        $userTeacher->status = "ACTIVE";
-        $userTeacher->school_id = $user->school_id;
-        $userTeacher->save();
+        $userExist = $this->userRepository->userByEmail($fields['email'], $user->school_id);
+        if ($userExist) {
+            if ($userExist->status === 'INACTIVE') {
+                return response()->json([
+                    'message' => 'Error al procesar la solicitud.',
+                    'errors' => ['El usuario se encuentra inactivo. Puede activarlo cambiando su estado.'],
+                ], JsonResponse::HTTP_CONFLICT);
+            }
 
-        $newTeacher = new Teacher;
-        $newTeacher->full_name = $fields["full_name"];
-        $newTeacher->document = $fields["document"];
-        $newTeacher->phone = $fields["phone"];
-        $newTeacher->status = 'ACTIVE';
-        $newTeacher->school_id = $user->school_id;
-        $newTeacher->user_id = $userTeacher->id;
-        $newTeacher->save();
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No puede usar el correo especificado.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        }
+
+        $userTeacher = $this->userRepository->saveUsers([
+            'email' => trim($fields["email"]),
+            'password' => Hash::make($fields["password"]),
+            'role' => 'TEACHER',
+            'status' => 'ACTIVE',
+            'school_id' => $user->school_id,
+        ]);
+
+        $newTeacher = $this->teacherRepository->saveTeacher([
+            'full_name' => $fields["full_name"],
+            'document' => $fields["document"],
+            'phone' => $fields["phone"],
+            'school_id' => $user->school_id,
+            'user_id' => $userTeacher->id
+        ]);
 
         return response()->json([
             'message' => 'Maestro registrado éxitosamente.',
-            'errors' => [],
-            'data' => [
-                'teacher' => $newTeacher
-            ]
+            'data' => new TeacherResource($newTeacher)
         ]);
     }
 

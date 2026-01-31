@@ -7,6 +7,7 @@ use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TeacherController extends Controller
 {
@@ -34,9 +35,16 @@ class TeacherController extends Controller
      */
     public function store(StoreTeacherRequest $request)
     {
-        $validated = $request->validated();
-        $userAuth = Auth::user();
-        return $this->teacherService->saveTeacher($validated, $userAuth);
+        try {
+            $validated = $request->validated();
+            $userAuth = Auth::user();
+            return $this->teacherService->saveTeacher($validated, $userAuth);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al guardar el maestro.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

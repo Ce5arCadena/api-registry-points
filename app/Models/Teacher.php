@@ -21,6 +21,10 @@ class Teacher extends Model
 
     protected $table = 'teachers';
 
+    public function scopeActive($query) {
+        return $query->where('status', 'ACTIVE');
+    }
+
     public function user() {
         return $this->belongsTo(User::class);
     }
