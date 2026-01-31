@@ -21,14 +21,6 @@ class SchoolController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreSchoolRequest $request): JsonResponse
@@ -59,14 +51,6 @@ class SchoolController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(School $school)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateSchoolRequest $request, int $school): JsonResponse
@@ -84,15 +68,15 @@ class SchoolController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($school)
+    public function destroy(int $school): JsonResponse
     {
-        $result = $this->schoolService->deleteSchool($school);
-        return response()->json([
-            'message' => 'Colegio eliminado éxitosamente.',
-            'errors'=> [],
-            'data' => [
-                'school' => $result
-            ]
-        ]);
+        try {
+            return $this->schoolService->deleteSchool($school);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al eliminar el colegio.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 }

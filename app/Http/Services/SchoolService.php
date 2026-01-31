@@ -105,18 +105,26 @@ class SchoolService {
         return new SchoolResource($school);
     }
 
-    public function deleteSchool($school) {
-        $school = School::where('status', 'ACTIVE')->where('id', $school)->first();
-        if (!$school) {
-            throw new ModelNotFoundException('No se pudo encontrar el colegio especificado.');
-        }
+    public function deleteSchool(int $school) {
+        $schoolById = $this->schoolRepository->findById($school);
+        if (!$schoolById) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['El colegio no existe.'],
+            ]);
+        } 
 
-        $school->user->update(['status'=> 'INACTIVE']);
-        $school->update([
-            'status'=> 'INACTIVE'
+        $this->schoolRepository->updateSchool($schoolById->id, [
+            'status'=> 'INACTIVE',
+        ]);
+        $this->userRepository->updateUser($schoolById->user_id, [
+            'status' => 'INACTIVE'
         ]);
 
-        return new SchoolResource($school);
+        return response()->json([
+            'message' => 'Colegio eliminado.',
+            'data' => new SchoolResource($schoolById->fresh())
+        ]);
     }
 
     public function getAll() {
