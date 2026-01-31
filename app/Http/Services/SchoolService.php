@@ -97,12 +97,18 @@ class SchoolService {
     }
 
     public function showSchool($school) {
-        $school = School::where('status', 'ACTIVE')->where('id', $school)->with('user')->first();
-        if (!$school) {
-            throw new ModelNotFoundException('No se pudo encontrar el colegio especificado.');
+        $schoolById = $this->schoolRepository->findById($school);
+        if (!$schoolById) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['El colegio no existe.'],
+            ]);
         }
 
-        return new SchoolResource($school);
+        return response()->json([
+            'message' => 'Colegio encontrado.',
+            'data' => new SchoolResource($schoolById)
+        ]);
     }
 
     public function deleteSchool(int $school) {

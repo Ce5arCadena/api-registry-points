@@ -38,16 +38,16 @@ class SchoolController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($school)
+    public function show($school): JsonResponse
     {
-        $result = $this->schoolService->showSchool($school);
-        return response()->json([
-            'message' => 'Colegio encontrado.',
-            'errors'=> [],
-            'data' => [
-                'school' => $result
-            ]
-        ]);
+        try {
+            return $this->schoolService->showSchool($school);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar el colegio.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
