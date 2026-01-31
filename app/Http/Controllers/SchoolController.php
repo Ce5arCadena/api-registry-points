@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\School;
+use Illuminate\Http\JsonResponse;
 use App\Http\Services\SchoolService;
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class SchoolController extends Controller
 {
@@ -15,9 +15,16 @@ class SchoolController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse|ResourceCollection
     {
-        return $this->schoolService->getAll();
+        try {
+            return $this->schoolService->getAll();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar los colegios.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**

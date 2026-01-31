@@ -3,12 +3,10 @@ namespace App\Http\Services;
 
 use App\Models\School;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\UserResource;
 use App\Repositories\UserRepository;
 use App\Http\Resources\SchoolResource;
 use App\Repositories\SchoolRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SchoolService {
     public function __construct(
@@ -134,11 +132,10 @@ class SchoolService {
     }
 
     public function getAll() {
-        $schools = School::where('status', 'ACTIVE')->with('user')->paginate()->toResourceCollection();
+        $schools = $this->schoolRepository->getAllSchoolsWithPaginate();
         
         return $schools->additional([
-            'message' => 'Lista de colegios.',
-            'errors' => []
+            'message' => 'Lista de colegios.'
         ]);
     }
 }

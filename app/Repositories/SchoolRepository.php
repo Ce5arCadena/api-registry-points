@@ -20,4 +20,11 @@ class SchoolRepository {
     public function findByName(string $name) {
         return School::active()->where('name', $name)->first();
     }
+
+    public function getAllSchoolsWithPaginate() {
+        return School::active()
+            // ->with('user')
+            ->paginate()
+            ->toResourceCollection();
+    }
 }
