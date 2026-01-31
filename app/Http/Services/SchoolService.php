@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Services;
 
-use App\Models\School;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\UserRepository;
 use App\Http\Resources\SchoolResource;
@@ -15,7 +14,7 @@ class SchoolService {
     ) {}
 
     public function saveSchool(array $fields): JsonResponse {
-        $userAdmin = $this->userRepository->saveUsers([
+        $userSchool = $this->userRepository->saveUsers([
             'email' => $fields['email'],
             'password' => Hash::make($fields["password"]),
             'role' => 'SCHOOL',
@@ -23,11 +22,11 @@ class SchoolService {
 
         $newSchool = $this->schoolRepository->saveSchools([
             'name' => $fields["name"],
-            'user_id' => $userAdmin->id,
+            'user_id' => $userSchool->id,
             'status' => 'ACTIVE'
         ]);
 
-        $this->userRepository->updateUser($userAdmin->id, [
+        $this->userRepository->updateUser($userSchool->id, [
             'school_id' => $newSchool->id
         ]);
 
@@ -70,9 +69,9 @@ class SchoolService {
         $user = $this->userRepository->findById($schoolById->user_id);
         if (isset($fields['email'])) {
             $email = trim($fields['email']);
-            $exists = $this->userRepository->userExistsByName($email, $schoolById->id,$user->id);
+            $existsUserByEmail = $this->userRepository->userExistsByEmail($email, $schoolById->id,$user->id);
 
-            if ($exists) {
+            if ($existsUserByEmail) {
                 return response()->json([
                     'message' => 'Error al procesar la solicitud.',
                     'errors' => ['El correo ya está en uso.'],

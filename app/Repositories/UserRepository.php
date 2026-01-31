@@ -19,7 +19,7 @@ class UserRepository {
             ->first();
     }
 
-    public function userExistsByName(string $email, int $schoolId, int $userId) {
+    public function userExistsByEmail(string $email, int $schoolId, int $userId) {
         return User::where('email', $email)
             ->where('school_id', $schoolId)
             ->where('status', 'ACTIVE')
