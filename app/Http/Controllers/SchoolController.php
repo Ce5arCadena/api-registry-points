@@ -33,14 +33,14 @@ class SchoolController extends Controller
      */
     public function store(StoreSchoolRequest $request): JsonResponse
     {
-        $result = $this->schoolService->saveSchool($request->validated());
-        return response()->json([
-            'message' => 'Colegio registrado éxitosamente.',
-            'errors' => [],
-            'data' => [
-                'school' => $result['school']
-            ]
-        ]);
+        try {
+            return $this->schoolService->saveSchool($request->validated());
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al crear el colegio.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**

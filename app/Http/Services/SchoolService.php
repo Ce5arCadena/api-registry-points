@@ -1,36 +1,45 @@
 <?php
 namespace App\Http\Services;
 
-use App\Http\Resources\SchoolCollection;
 use App\Models\User;
 use App\Models\School;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserResource;
+use App\Repositories\UserRepository;
 use App\Http\Resources\SchoolResource;
+use App\Repositories\SchoolRepository;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SchoolService {
-    public function saveSchool(array $fields) {
-        $userAdmin = new User;
-        $userAdmin->email = trim($fields["email"]);
-        $userAdmin->password = Hash::make($fields["password"]);
-        $userAdmin->role = "SCHOOL";
-        $userAdmin->status = "ACTIVE";
-        $userAdmin->save();
+    public function __construct(
+        protected SchoolRepository $schoolRepository,
+        protected UserRepository $userRepository
+    ) {}
 
-        $newSchool = new School;
-        $newSchool->name = $fields["name"];
-        $newSchool->user_id = $userAdmin->id;
-        $newSchool->status = 'ACTIVE';
-        $newSchool->save();
+    public function saveSchool(array $fields): JsonResponse {
+        $userAdmin = $this->userRepository->saveUsers([
+            'email' => $fields['email'],
+            'password' => Hash::make($fields["password"]),
+            'role' => 'SCHOOL',
+        ]);
 
-        $userAdmin->school_id = $newSchool->id;
-        $userAdmin->save();
+        $newSchool = $this->schoolRepository->saveSchools([
+            'name' => $fields["name"],
+            'user_id' => $userAdmin->id,
+            'status' => 'ACTIVE'
+        ]);
 
-        return [
-            'school' => $newSchool
-        ];
+        $this->userRepository->updateUser($userAdmin->id, [
+            'school_id' => $newSchool->id
+        ]);
+
+        return response()->json([
+            'message' => 'Colegio registrado éxitosamente.',
+            'errors' => [],
+            'data' => new SchoolResource($newSchool)
+        ]);
     }
 
     public function updateSchool(array $fields, School $school) {

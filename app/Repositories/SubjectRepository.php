@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Http\Resources\SubjectResource;
 use App\Models\Subject;
 
 class SubjectRepository {
