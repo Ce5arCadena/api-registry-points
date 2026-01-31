@@ -12,4 +12,18 @@ class UserRepository {
     public function updateUser(int $userId, array $fields) {
         return User::where("id", $userId)->update($fields);
     }
+
+    public function findById(int $id) {
+        return User::where('status', 'ACTIVE')
+            ->where('id', $id)
+            ->first();
+    }
+
+    public function userExistsByName(string $email, int $schoolId, int $userId) {
+        return User::where('email', $email)
+            ->where('school_id', $schoolId)
+            ->where('status', 'ACTIVE')
+            ->where('id', '!=', $userId)
+            ->exists();
+    }
 }

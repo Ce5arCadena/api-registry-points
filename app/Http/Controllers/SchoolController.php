@@ -69,16 +69,16 @@ class SchoolController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSchoolRequest $request, School $school)
+    public function update(UpdateSchoolRequest $request, int $school): JsonResponse
     {
-        $result = $this->schoolService->updateSchool($request->validated(), $school);
-        return response()->json([
-            'message' => 'Colegio actualizado éxitosamente.',
-            'errors'=> [],
-            'data' => [
-                'school' => $result
-            ]
-        ]);
+        try {
+            return $this->schoolService->updateSchool($request->validated(), $school);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar el colegio.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**

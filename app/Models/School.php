@@ -27,6 +27,10 @@ class School extends Model
         );
     }
 
+    public function scopeActive($query) {
+        return $query->where('status', 'ACTIVE');
+    }
+
     public function user() {
         return $this->belongsTo(User::class);
     }

@@ -23,14 +23,12 @@ class UpdateSchoolRequest extends FormRequest
      */
     public function rules(): array
     {
-        $schoolId = $this->route('school')->id;
         return [
             "name"=> [
                 'sometimes',
                 'required',
                 'string',
-                'max:255',
-                Rule::unique('schools', 'name')->ignore($schoolId)
+                'max:255'
             ],
             'email' => [
                 'sometimes',
