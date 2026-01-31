@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Services\SubjectService;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SubjectController extends Controller
@@ -16,9 +17,17 @@ class SubjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): ResourceCollection | JsonResponse
     {
-        
+        try {
+            $user = Auth::user();
+            return $this->subjectService->getAll($user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar las materias.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**

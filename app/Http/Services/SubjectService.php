@@ -3,14 +3,20 @@
 namespace App\Http\Services;
 
 use App\Models\User;
-use App\Models\Subject;
 use App\Http\Resources\SubjectResource;
 use App\Repositories\SubjectRepository;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class SubjectService {
     public function __construct(protected SubjectRepository $subjectRepository) {}
+
+    public function getAll(User $user): ResourceCollection {
+        $data = $this->subjectRepository->getSubjects($user->school_id);
+        return $data->additional([
+            'message' => 'Lista de materias.',
+        ]);
+    }
 
     public function store(array $fields, User $user) {
         $subjectByName = $this->subjectRepository->getByName($fields['name'], $user->school_id);
