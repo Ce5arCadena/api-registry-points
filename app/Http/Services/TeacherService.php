@@ -76,8 +76,8 @@ class TeacherService {
         $teacher = $this->teacherRepository->getTeacherById($teacher, $user->school_id);
         if (!$teacher) {
             return response()->json([
-            'message' => 'Error al procesar la solicitud.',
-            'errors' => ['No existe el maestro especificado.'],
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el maestro especificado.'],
             ], JsonResponse::HTTP_NOT_FOUND);
         }
                 
@@ -122,29 +122,26 @@ class TeacherService {
         }
 
         $this->userRepository->updateUser($teacher->user_id, $dataUser);
-        $teacherUpdate = $this->teacherRepository->updateTeacher($teacher->id, $dataTeacher);
+        $this->teacherRepository->updateTeacher($teacher->id, $dataTeacher);
 
         return response()->json([
             'message' => 'Maestro actualizado éxitosamente.',
-            'errors' => [],
-            'data' => [ new TeacherResource($teacher->fresh()) ]
+            'data' => new TeacherResource($teacher->fresh()) 
         ]);
     }
 
     public function showTeacher(int $teacher, User $user) {
-        $teacher = Teacher::where('status', 'ACTIVE')
-            ->where('id', $teacher)
-            ->where('school_id', $user->school_id) 
-            ->firstOr(function () {
-                throw new ModelNotFoundException('No se pudo encontrar el maestro especificado.');
-            });
+        $teacher = $this->teacherRepository->getTeacherById($teacher, $user->school_id);
+        if (!$teacher) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el maestro especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
 
         return response()->json([
             'message' => 'Maestro encontrado.',
-            'errors' => [],
-            'data' => [
-                'teacher' => new TeacherResource($teacher)
-            ]
+            'data' => new TeacherResource($teacher)
         ]);
     }
 
