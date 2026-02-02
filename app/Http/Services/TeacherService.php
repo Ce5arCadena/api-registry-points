@@ -146,36 +146,34 @@ class TeacherService {
     }
 
     public function deleteTeacher(int $teacher, User $user) {
-        $teacher = Teacher::where('status', 'ACTIVE')
-            ->where('id', $teacher)
-            ->where('school_id', $user->school_id)
-            ->firstOr(function () {
-                throw new ModelNotFoundException('No se pudo encontrar el maestro especificado.');
-            });
+        $teacher = $this->teacherRepository->getTeacherById($teacher, $user->school_id);
+        if (!$teacher) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el maestro especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
 
         $teacher->user->update(['status'=> 'INACTIVE']);
-        $teacher->update([
-            'status'=> 'INACTIVE'
+        $this->userRepository->updateUser($teacher->user_id, [
+            'status' => 'INACTIVE'
+        ]);
+        $this->teacherRepository->updateTeacher($teacher->id, [
+            'status' => 'INACTIVE'
         ]);
 
         return response()->json([
             'message' => 'Maestro eliminado éxitosamente.',
             'errors' => [],
-            'data' => [
-                'teacher' => new TeacherResource($teacher)
-            ]
+            'data' => new TeacherResource($teacher->fresh())
         ]);
     }
 
     public function getAll(User $user) {
-        $teachers = Teacher::where('status', 'ACTIVE')
-            ->where('school_id', $user->school_id)
-            ->paginate()
-            ->toResourceCollection();
+        $teachers = $this->teacherRepository->getAllTeachers($user->school_id);
         
         return $teachers->additional([
             'message' => 'Lista de colegios.',
-            'errors' => []
         ]);
     }
 }

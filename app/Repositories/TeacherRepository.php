@@ -26,4 +26,11 @@ class TeacherRepository {
             ->where('school_id', $schoolId)
             ->first();
     }
+
+    public function getAllTeachers(int $schoolId) {
+        return Teacher::active()
+            ->where('school_id', $schoolId)
+            ->paginate()
+            ->toResourceCollection();
+    }
 }
