@@ -69,9 +69,16 @@ class TeacherController extends Controller
      */
     public function update(UpdateTeacherRequest $request, int $teacher)
     {
-        $validated = $request->validated();
-        $user = Auth::user();
-        return $this->teacherService->updateTeacher($validated,  $teacher, $user);
+        try {
+            $validated = $request->validated();
+            $user = Auth::user();
+            return $this->teacherService->updateTeacher($validated,  $teacher, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar el maestro.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

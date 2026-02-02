@@ -67,60 +67,67 @@ class TeacherService {
 
     public function updateTeacher(array $fields, int $teacher, User $user) {
         if (empty($fields)) {
-            throw ValidationException::withMessages([
-                'errors' => ['Debe enviar al menos un campo.']
-            ]);
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['Debe especificar al menos un campo.'],
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
         
-        $teacher = Teacher::where('id', $teacher)
-            ->where('school_id', $user->school_id)
-            ->where('status', 'ACTIVE')
-            ->firstOr(function () {
-                throw new NotFoundHttpException('No existe el maestro solicitado');
-            });
-
+        $teacher = $this->teacherRepository->getTeacherById($teacher, $user->school_id);
+        if (!$teacher) {
+            return response()->json([
+            'message' => 'Error al procesar la solicitud.',
+            'errors' => ['No existe el maestro especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+                
+        $dataUser = [];
+        $dataTeacher = [];
         if (isset($fields['email'])) {
             $email = trim($fields['email']);
 
-            $userExist = User::where('email', $email)
-                ->where('school_id', $user->school_id)
-                ->where('status', 'ACTIVE')
-                ->first();
-            
-                if (isset($userExist) && $userExist->id !== $teacher->id) throw new ConflictHttpException('No puede usar el correo especificado.');
+            $userExist = $this->userRepository->getUserByEmailWithStatus($email, $user->school_id);
+            if (isset($userExist) && $userExist->id !== $teacher->user_id) {
+                return response()->json([
+                    'message' => 'Error al procesar la solicitud.',
+                    'errors' => ['No puede usar el correo especificado.'],
+                ], JsonResponse::HTTP_CONFLICT);
+            };
 
-            $teacher->user->email = $email;
+            $dataUser['email'] = $email;
         }
 
         if (isset($fields['password'])) {
-            $teacher->user->password = Hash::make($fields['password']);
+            $dataUser['password'] = Hash::make($fields['password']);
         }
 
         if (isset($fields['full_name'])) {
-            $teacherByName = Teacher::where("full_name", $fields["full_name"])
-                ->where('school_id', $user->school_id)
-                ->where('status', 'ACTIVE')
-                ->first();
-            if (isset($teacherByName) && $teacherByName->id !== $teacher->id) throw new ConflictHttpException('Ya existe un maestro con el mismo nombre. Use otro.');
-            $teacher->full_name = trim($fields['full_name']);
+            $teacherByName = $this->teacherRepository->getTeacherByName($teacher, $user->school_id);
+            if ($teacherByName && $teacherByName->id !== $teacher->id) {
+                return response()->json([
+                    'message' => 'Error al procesar la solicitud.',
+                    'errors' => ['Ya existe un maestro con el mismo nombre. Use otro.'],
+                ], JsonResponse::HTTP_CONFLICT);
+            };
+
+            $dataTeacher['full_name'] = trim($fields['full_name']);
         }
 
         if (isset($fields['document'])) {
-            $teacher->document = trim($fields['document']);
+            $dataTeacher['document'] = trim($fields['document']);
         }
 
         if (isset($fields['phone'])) {
-            $teacher->phone = trim($fields['phone']);
+            $dataTeacher['phone'] = trim($fields['phone']);
         }
 
-        $teacher->save();
+        $this->userRepository->updateUser($teacher->user_id, $dataUser);
+        $teacherUpdate = $this->teacherRepository->updateTeacher($teacher->id, $dataTeacher);
 
         return response()->json([
             'message' => 'Maestro actualizado éxitosamente.',
             'errors' => [],
-            'data' => [
-                'teacher' => new TeacherResource($teacher)
-            ]
+            'data' => [ new TeacherResource($teacher->fresh()) ]
         ]);
     }
 

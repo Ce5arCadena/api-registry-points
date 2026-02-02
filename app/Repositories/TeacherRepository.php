@@ -12,7 +12,18 @@ class TeacherRepository {
             ->first();
     }
 
+    public function updateTeacher(int $teacherId, array $fields) {
+        return Teacher::where("id", $teacherId)->update($fields);
+    }
+
     public function saveTeacher(array $teacher) {
         return Teacher::create($teacher);
+    }
+
+    public function getTeacherById(int $teacherId, int $schoolId) {
+        return Teacher::active()
+            ->where('id', $teacherId)
+            ->where('school_id', $schoolId)
+            ->first();
     }
 }
