@@ -46,28 +46,29 @@ class GradeService {
     }
 
     public function update(array $fields, int $grade, User $user) {
-        if (empty($fields) || !$user) throw new AuthorizationException("No está autorizado.");
-
-        $gradeExist = Grade::where('id', $grade)
-            ->where('status', 'ACTIVE')
-            ->where('school_id', $user->school_id)
-            ->firstOr(function () {
-                throw new NotFoundHttpException('No existe el curso especificado');
-            });
+        $gradeExist = $this->gradeRepository->getGradeById($grade, $user->school_id);
+        if (!$gradeExist) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el curso especificado.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        };
         
-        $gradeByName = Grade::where('name', $fields['name'])->where('status', 'ACTIVE')->where("school_id", $user->school_id)->first();
-        if (isset($gradeByName) && $gradeExist->id !== $gradeByName->id) throw new ConflictHttpException('Ya existe un curso con el mismo nombre. Use otro.');
+        $gradeByName = $this->gradeRepository->getGradeByName($fields['name'], $user->school_id);
+        if ($gradeByName && $gradeExist->id !== $gradeByName->id) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['Ya existe un curso con el mismo nombre.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        };
 
-        $gradeExist->update([
+        $this->gradeRepository->updateGrade($grade, $user->school_id, [
             'name' => $fields['name']
         ]);
         
         return response()->json([
             'message' => 'Curso actualizado éxitosamente.',
-            'errors' => [],
-            'data' => [
-                'grade' => $gradeExist
-            ]
+            'data' => $gradeExist->fresh()
         ]);
     }
 

@@ -22,14 +22,6 @@ class GradeController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreGradeRequest $request): JsonResponse
@@ -50,29 +42,28 @@ class GradeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($grade)
+    public function show(int $grade)
     {
         $user = Auth::user();
         return $this->gradeService->showGrade($grade, $user);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Grade $grade)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(StoreGradeRequest $request, $grade)
+    public function update(StoreGradeRequest $request, int $grade)
     {
-        $validated = $request->validated();
-        $user = Auth::user();
-
-        return $this->gradeService->update($validated, $grade, $user);
+        try {
+            $validated = $request->validated();
+            $user = Auth::user();
+    
+            return $this->gradeService->update($validated, $grade, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al editar el curso.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
