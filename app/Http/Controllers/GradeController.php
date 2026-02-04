@@ -6,6 +6,7 @@ use App\Models\Grade;
 use App\Http\Services\GradeService;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreGradeRequest;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class GradeController extends Controller
 {
@@ -31,12 +32,19 @@ class GradeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreGradeRequest $request)
+    public function store(StoreGradeRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $user = Auth::user();
-
-        return $this->gradeService->store($validated, $user);
+        try {
+            $validated = $request->validated();
+            $user = Auth::user();
+    
+            return $this->gradeService->store($validated, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al crear el curso.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**

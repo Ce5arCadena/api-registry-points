@@ -17,4 +17,8 @@ class Grade extends Model
     ];
 
     protected $table = 'grades';
+    
+    public function scopeActive($query) {
+        return $query->where('status', 'ACTIVE');
+    }
 }

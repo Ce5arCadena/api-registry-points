@@ -3,12 +3,15 @@ namespace App\Http\Services;
 
 use App\Models\User;
 use App\Models\Grade;
+use App\Http\Resources\GradeResource;
+use App\Repositories\GradeRepository;
 use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GradeService {
-    public function __construct() {}
+    public function __construct(protected GradeRepository $gradeRepository) {}
 
     public function getAll(User $user) {
         $grades = Grade::where("school_id", $user->school_id)
@@ -22,23 +25,23 @@ class GradeService {
         ]);
     }
 
-    public function store(array $fields, User $user) {
-        if (empty($fields) || !$user) throw new AuthorizationException("No está autorizado.");
+    public function store(array $fields, User $user): JsonResponse {
+        $gradeExist = $this->gradeRepository->getGradeByName($fields['name'], $user->school_id);
+        if ($gradeExist) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['Ya existe un curso con el mismo nombre.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        };
 
-        $gradeExist = Grade::where('name', trim($fields['name']))->where('school_id', $user->school_id)->first();
-        if ($gradeExist) throw new ConflictHttpException('Ya existe un curso con el mismo nombre.');
-
-        $grade = new Grade;
-        $grade->name = trim($fields['name']);
-        $grade->school_id = $user->school_id;
-        $grade->save();
+        $grade = $this->gradeRepository->createGrade([
+            'name' => trim($fields['name']),
+            'school_id' => $user->school_id
+        ]);
 
         return response()->json([
             'message' => 'Curso registrado éxitosamente.',
-            'errors' => [],
-            'data' => [
-                'grade' => $grade
-            ]
+            'data' => new GradeResource($grade)
         ]);
     }
 
