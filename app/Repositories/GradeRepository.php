@@ -26,4 +26,11 @@ class GradeRepository {
     public function updateGrade(int $grade, int $schoolId, array $fields) {
         return $this->getGradeById($grade, $schoolId)->update($fields);
     }
+
+    public function getGrades(int $schoolId) {
+        return Grade::active()
+            ->where("school_id", $schoolId)
+            ->paginate()
+            ->toResourceCollection();
+    }
 }

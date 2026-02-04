@@ -2,26 +2,18 @@
 namespace App\Http\Services;
 
 use App\Models\User;
-use App\Models\Grade;
 use App\Http\Resources\GradeResource;
 use App\Repositories\GradeRepository;
-use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GradeService {
     public function __construct(protected GradeRepository $gradeRepository) {}
 
     public function getAll(User $user) {
-        $grades = Grade::where("school_id", $user->school_id)
-            ->where('status', 'ACTIVE')
-            ->paginate()
-            ->toResourceCollection();
+        $grades = $this->gradeRepository->getGrades($user->school_id);
 
         return $grades->additional([
-            'message' => 'Lista de cursos.',
-            'errors' => []
+            'message' => 'Lista de cursos.'
         ]);
     }
 

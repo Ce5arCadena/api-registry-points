@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Grade;
 use App\Http\Services\GradeService;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreGradeRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class GradeController extends Controller
 {
@@ -15,10 +15,17 @@ class GradeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse|ResourceCollection
     {
-        $user = Auth::user();
-        return $this->gradeService->getAll($user);
+        try {
+            $user = Auth::user();
+            return $this->gradeService->getAll($user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al crear el curso.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
@@ -42,16 +49,23 @@ class GradeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $grade)
+    public function show(int $grade): JsonResponse
     {
-        $user = Auth::user();
-        return $this->gradeService->showGrade($grade, $user);
+        try {
+            $user = Auth::user();
+            return $this->gradeService->showGrade($grade, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar el curso.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreGradeRequest $request, int $grade)
+    public function update(StoreGradeRequest $request, int $grade): JsonResponse
     {
         try {
             $validated = $request->validated();
@@ -69,7 +83,7 @@ class GradeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $grade)
+    public function destroy(int $grade): JsonResponse
     {
         try {
             $user = Auth::user();
