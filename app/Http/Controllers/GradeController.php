@@ -71,7 +71,14 @@ class GradeController extends Controller
      */
     public function destroy(int $grade)
     {
-        $user = Auth::user();
-        return $this->gradeService->destroy($grade, $user);
+        try {
+            $user = Auth::user();
+            return $this->gradeService->destroy($grade, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al eliminar el curso.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 }

@@ -45,13 +45,13 @@ class GradeService {
         ]);
     }
 
-    public function update(array $fields, int $grade, User $user) {
+    public function update(array $fields, int $grade, User $user): JsonResponse {
         $gradeExist = $this->gradeRepository->getGradeById($grade, $user->school_id);
         if (!$gradeExist) {
             return response()->json([
                 'message' => 'Error al procesar la solicitud.',
                 'errors' => ['No existe el curso especificado.'],
-            ], JsonResponse::HTTP_CONFLICT);
+            ], JsonResponse::HTTP_NOT_FOUND);
         };
         
         $gradeByName = $this->gradeRepository->getGradeByName($fields['name'], $user->school_id);
@@ -72,32 +72,37 @@ class GradeService {
         ]);
     }
 
-    public function showGrade(int $grade, User $user) {
-        $grade = Grade::where('id', $grade)->where('school_id', $user->school_id)->firstOr(function () {
-            throw new NotFoundHttpException('No existe el curso especificado');
-        });
+    public function showGrade(int $grade, User $user): JsonResponse {
+        $grade = $this->gradeRepository->getGradeById($grade, $user->school_id);
+        if (!$grade) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el curso especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        };
 
         return response()->json([
             'message' => 'Curso listado.',
-            'errors' => [],
-            'data' => [
-                $grade
-            ]
+            'data' => new GradeResource($grade)
         ]);
     }
 
-    public function destroy(int $grade, User $user) {
-        $grade = Grade::where('id', $grade)->where('school_id', $user->school_id)->firstOr(function () {
-            throw new NotFoundHttpException('No existe el curso especificado');
-        });
-        
-        $grade->update([
+    public function destroy(int $grade, User $user): JsonResponse {
+        $gradeExist = $this->gradeRepository->getGradeById($grade, $user->school_id);
+        if (!$gradeExist) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el curso especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        };
+
+        $this->gradeRepository->updateGrade($grade, $user->school_id, [
             'status' => 'INACTIVE'
         ]);
 
         return response()->json([
             'message' => 'Curso eliminado éxitosamente.',
-            'errors' => []
+            'data' => new GradeResource($gradeExist->fresh())
         ]);
     }
 }
