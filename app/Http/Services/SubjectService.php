@@ -5,8 +5,8 @@ namespace App\Http\Services;
 use App\Models\User;
 use App\Http\Resources\SubjectResource;
 use App\Repositories\SubjectRepository;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class SubjectService {
     public function __construct(protected SubjectRepository $subjectRepository) {}

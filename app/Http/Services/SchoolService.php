@@ -41,7 +41,7 @@ class SchoolService {
             return response()->json([
                 'message' => 'Error al procesar la solicitud.',
                 'errors' => ['Debe enviar al menos un campo.'],
-            ]);
+            ], JsonResponse::HTTP_BAD_REQUEST);
         }
         
         $schoolById = $this->schoolRepository->findById($school);
@@ -49,7 +49,7 @@ class SchoolService {
             return response()->json([
                 'message' => 'Error al procesar la solicitud.',
                 'errors' => ['El colegio no existe.'],
-            ]);
+            ], JsonResponse::HTTP_NOT_FOUND);
         }    
 
         if(isset($fields['name'])) {
@@ -58,7 +58,7 @@ class SchoolService {
                 return response()->json([
                     'message' => 'Error al procesar la solicitud.',
                     'errors' => ['El nombre ya se encuentra en uso.'],
-                ]);
+                ], JsonResponse::HTTP_CONFLICT);
             }
             $this->schoolRepository->updateSchool($schoolById->id, [
                 'name'=> $fields['name'],
@@ -75,7 +75,7 @@ class SchoolService {
                 return response()->json([
                     'message' => 'Error al procesar la solicitud.',
                     'errors' => ['El correo ya está en uso.'],
-                ]);
+                ], JsonResponse::HTTP_CONFLICT);
             }
 
             $dataUserUpdate['email'] = $email;
@@ -99,7 +99,7 @@ class SchoolService {
             return response()->json([
                 'message' => 'Error al procesar la solicitud.',
                 'errors' => ['El colegio no existe.'],
-            ]);
+            ], JsonResponse::HTTP_NOT_FOUND);
         }
 
         return response()->json([
@@ -114,7 +114,7 @@ class SchoolService {
             return response()->json([
                 'message' => 'Error al procesar la solicitud.',
                 'errors' => ['El colegio no existe.'],
-            ]);
+            ], JsonResponse::HTTP_NOT_FOUND);
         } 
 
         $this->schoolRepository->updateSchool($schoolById->id, [
