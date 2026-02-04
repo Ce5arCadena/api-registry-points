@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Teacher;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TeacherController extends Controller
@@ -52,8 +52,15 @@ class TeacherController extends Controller
      */
     public function show(int $teacher)
     {
-        $user = Auth::user();
-        return $this->teacherService->showTeacher($teacher, $user);
+        try {
+            $user = Auth::user();
+            return $this->teacherService->showTeacher($teacher, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar el maestro.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
@@ -86,7 +93,14 @@ class TeacherController extends Controller
      */
     public function destroy(int $teacher)
     {
-        $user = Auth::user();
-        return $this->teacherService->deleteTeacher($teacher, $user);
+        try {
+            $user = Auth::user();
+            return $this->teacherService->deleteTeacher($teacher, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al eliminar el maestro.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }

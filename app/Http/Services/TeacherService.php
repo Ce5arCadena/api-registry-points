@@ -153,8 +153,7 @@ class TeacherService {
                 'errors' => ['No existe el maestro especificado.'],
             ], JsonResponse::HTTP_NOT_FOUND);
         }
-
-        $teacher->user->update(['status'=> 'INACTIVE']);
+        
         $this->userRepository->updateUser($teacher->user_id, [
             'status' => 'INACTIVE'
         ]);
