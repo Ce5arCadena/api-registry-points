@@ -18,16 +18,15 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        return $this->teacherService->getAll($user);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        try {
+            $user = Auth::user();
+            return $this->teacherService->getAll($user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar los maestros.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

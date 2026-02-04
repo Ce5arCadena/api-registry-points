@@ -2,16 +2,11 @@
 namespace App\Http\Services;
 
 use App\Models\User;
-use App\Models\Teacher;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\TeacherResource;
 use App\Repositories\TeacherRepository;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TeacherService {
     public function __construct(
@@ -153,7 +148,7 @@ class TeacherService {
                 'errors' => ['No existe el maestro especificado.'],
             ], JsonResponse::HTTP_NOT_FOUND);
         }
-        
+
         $this->userRepository->updateUser($teacher->user_id, [
             'status' => 'INACTIVE'
         ]);
