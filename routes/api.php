@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 
@@ -58,4 +58,16 @@ Route::middleware(['auth:sanctum','abilities:school:teachers'])
         Route::get('{subject}', 'show');
         Route::put('{subject}', 'update');
         Route::delete('{subject}', 'destroy');
+    });
+
+// Rutas de estudiantes
+Route::middleware(['auth:sanctum','abilities:school:students'])
+    ->prefix('students')
+    ->controller(StudentController::class)
+    ->group(function() {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{student}', 'show');
+        Route::put('{student}', 'update');
+        Route::delete('{student}', 'destroy');
     });
