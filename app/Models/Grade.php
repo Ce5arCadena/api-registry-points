@@ -21,4 +21,8 @@ class Grade extends Model
     public function scopeActive($query) {
         return $query->where('status', 'ACTIVE');
     }
+
+    public function students() {
+        return $this->hasMany(Student::class);
+    }
 }
