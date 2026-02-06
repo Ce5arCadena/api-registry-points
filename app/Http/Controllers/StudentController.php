@@ -56,7 +56,14 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, int $student)
     {
-        //
+        try {
+            return $this->studentService->updateStudent($request, $student);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar el estudiante.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

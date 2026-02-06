@@ -16,4 +16,12 @@ class StudentRepository {
     public function createStudent(array $data) {
         return Student::create($data);
     }
+
+    public function getStudentById(int $id, int $schoolId) {
+        return Student::active()->where('id', $id)->where('school_id', $schoolId)->first();
+    }
+
+    public function updateStudent(int $id, int $schoolId, array $data) {
+        return $this->getStudentById($id, $schoolId)->update($data);
+    }
 }
