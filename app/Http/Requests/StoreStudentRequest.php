@@ -25,6 +25,8 @@ class StoreStudentRequest extends FormRequest
     public function rules(): array
     {
         $userAuth = Auth::user();
+        // dump($userAuth);
+        // dump($this->input('grade'));
         return [
             'name' => 'required|max:255',
             'last_name' => 'required|max:255',
@@ -35,7 +37,13 @@ class StoreStudentRequest extends FormRequest
                 Rule::unique('students')->where(fn (Builder $query) => $query->where('school_id', $userAuth->school_id))
             ],
             'phone' => 'required|numeric|digits_between:10,15',
-            'grade' => 'required|numeric',
+            'grade' => [
+                'required',
+                'numeric',
+                Rule::exists('grades', 'id')->where(function (Builder $query) use ($userAuth) {
+                    $query->where('school_id', $userAuth->school_id);  
+                })
+            ],
         ];
     }
 
@@ -53,8 +61,9 @@ class StoreStudentRequest extends FormRequest
             'phone.required' => 'El teléfono es obligatorio.',
             'phone.numeric' => 'El teléfono debe ser un número.',
             'phone.digits_between' => 'El teléfono debe tener entre 10 y 15 dígitos.',
-            'grade.required' => 'El grado es obligatorio.',
-            'grade.numeric' => 'El grado debe ser un número.',
+            'grade.required' => 'El curso es obligatorio.',
+            'grade.numeric' => 'El curso debe ser un número.',
+            'grade.exists' => 'El curso especificado no existe.'
         ];
     }
 }
