@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateStudentRequest extends FormRequest
@@ -11,7 +14,7 @@ class UpdateStudentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +24,48 @@ class UpdateStudentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userAuth = Auth::user();
         return [
-            //
+            'name' => 'sometimes|required|max:255',
+            'last_name' => 'sometimes|required|max:255',
+            'document' => [
+                'sometimes',
+                'required',
+                'numeric',
+                'digits_between:6,12',
+                Rule::unique('students', 'document')
+                    ->ignore($this->route('student'))
+                    ->where(fn (Builder $query) => $query->where('school_id', $userAuth->school_id))
+            ],
+            'phone' => 'sometimes|required|numeric|digits_between:10,15',
+            'grade' => [
+                'sometimes',
+                'required',
+                'numeric',
+                Rule::exists('grades', 'id')->where(function (Builder $query) use ($userAuth) {
+                    $query->where('school_id', $userAuth->school_id);  
+                })
+            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.max' => 'El nombre no puede tener más de 255 caracteres.',
+            'last_name.required' => 'El apellido es obligatorio.',
+            'last_name.max' => 'El apellido no puede tener más de 255 caracteres.',
+            'document.required' => 'El documento es obligatorio.',
+            'document.numeric' => 'El documento debe ser un número.',
+            'document.digits_between' => 'El documento debe tener entre 6 y 12 dígitos.',
+            'document.unique' => 'Ya existe un alumno con este número de documento.',
+            'phone.required' => 'El teléfono es obligatorio.',
+            'phone.numeric' => 'El teléfono debe ser un número.',
+            'phone.digits_between' => 'El teléfono debe tener entre 10 y 15 dígitos.',
+            'grade.required' => 'El curso es obligatorio.',
+            'grade.numeric' => 'El curso debe ser un número.',
+            'grade.exists' => 'El curso especificado no existe.'
         ];
     }
 }

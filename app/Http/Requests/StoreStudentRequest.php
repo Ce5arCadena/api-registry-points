@@ -25,8 +25,6 @@ class StoreStudentRequest extends FormRequest
     public function rules(): array
     {
         $userAuth = Auth::user();
-        // dump($userAuth);
-        // dump($this->input('grade'));
         return [
             'name' => 'required|max:255',
             'last_name' => 'required|max:255',
