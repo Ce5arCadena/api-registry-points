@@ -69,8 +69,15 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Student $student)
+    public function destroy(int $student): JsonResponse
     {
-        //
+        try {
+            return $this->studentService->deleteStudent($student);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al eliminar el estudiante.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }
