@@ -8,6 +8,7 @@ use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\PointCategoryController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/auth/create-admin', [UserController::class, 'createSuperAdmin']);
@@ -70,4 +71,16 @@ Route::middleware(['auth:sanctum','abilities:school:students'])
         Route::get('{student}', 'show');
         Route::put('{student}', 'update');
         Route::delete('{student}', 'destroy');
+    });
+
+// Rutas de categoría de puntos
+Route::middleware(['auth:sanctum','abilities:teacher:point-categories'])
+    ->prefix('point-categories')
+    ->controller(PointCategoryController::class)
+    ->group(function() {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{category}', 'show');
+        Route::put('{category}', 'update');
+        Route::delete('{category}', 'destroy');
     });

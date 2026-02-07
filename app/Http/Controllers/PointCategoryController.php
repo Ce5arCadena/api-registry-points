@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\PointCategory;
+use App\Http\Services\PointCategoryService;
 use App\Http\Requests\StorePointCategoryRequest;
 use App\Http\Requests\UpdatePointCategoryRequest;
 
 class PointCategoryController extends Controller
 {
+    public function __construct(protected PointCategoryService $pointCategoryService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +32,14 @@ class PointCategoryController extends Controller
      */
     public function store(StorePointCategoryRequest $request)
     {
-        //
+        try {
+            return $this->pointCategoryService->createPointCategory($request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al crear la categoría de puntos.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
