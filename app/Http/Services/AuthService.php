@@ -2,11 +2,15 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use App\Repositories\AuthRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\AuthenticationException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthService {
-    public function login(array $data) {
+    public function __construct(protected AuthRepository $authRepository) {}
+
+    public function login(array $data): JsonResponse {
         $user = $this->existUser($data);
 
         $token = '';
@@ -23,13 +27,16 @@ class AuthService {
             $token = $user->createToken('api-token')->plainTextToken;
         }
 
-        return [
-            'token' => $token
-        ];
+        return response()->json([
+            'message' => 'Login éxitoso',
+            'data' => [
+                'token' => $token
+            ]
+        ]);
     }
 
     public function existUser(array $data): User | AuthenticationException  {
-        $user = User::where('email', trim($data['email']))->where('status', 'ACTIVE')->first();
+        $user = $this->authRepository->existUserByEmail($data['email']);
         if (!$user || !Hash::check(trim($data['password']), $user->password)) {
             throw new AuthenticationException('Usuario y/o contraseña incorrectos.');
         }

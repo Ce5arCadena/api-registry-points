@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\SubjectService;
 use App\Http\Requests\StoreSubjectRequest;
@@ -61,14 +60,6 @@ class SubjectController extends Controller
                 'errors' => [$e->getMessage()]
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Subject $subject)
-    {
-        //
     }
 
     /**

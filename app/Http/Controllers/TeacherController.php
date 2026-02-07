@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Teacher;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class TeacherController extends Controller
 {
@@ -16,7 +16,7 @@ class TeacherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse|ResourceCollection
     {
         try {
             $user = Auth::user();
@@ -32,7 +32,7 @@ class TeacherController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTeacherRequest $request)
+    public function store(StoreTeacherRequest $request): JsonResponse
     {
         try {
             $validated = $request->validated();
@@ -49,7 +49,7 @@ class TeacherController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $teacher)
+    public function show(int $teacher): JsonResponse
     {
         try {
             $user = Auth::user();
@@ -63,17 +63,9 @@ class TeacherController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Teacher $teacher)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTeacherRequest $request, int $teacher)
+    public function update(UpdateTeacherRequest $request, int $teacher): JsonResponse
     {
         try {
             $validated = $request->validated();
@@ -90,7 +82,7 @@ class TeacherController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $teacher)
+    public function destroy(int $teacher): JsonResponse
     {
         try {
             $user = Auth::user();
