@@ -46,9 +46,16 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Student $student)
+    public function show(int $student): JsonResponse
     {
-        //
+        try {
+            return $this->studentService->getStudent($student);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar el estudiante.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

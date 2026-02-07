@@ -44,6 +44,23 @@ class StudentService {
         ]);
     }
 
+    public function getStudent(int $student): JsonResponse {
+        $authUser = Auth::user();
+
+        $studentExists = $this->studentRepository->getStudentById($student, $authUser->school_id);
+        if (!$studentExists) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['El estudiante no existe.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'message' => 'Estudiante encontrado.',
+            'data' => new StudentResource($studentExists)
+        ]);
+    }
+
     public function deleteStudent(int $student): JsonResponse {
         $authUser = Auth::user();
 
