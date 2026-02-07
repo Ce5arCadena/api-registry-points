@@ -44,6 +44,14 @@ class StudentService {
         ]);
     }
 
+    public function listStudents() {
+        $authUser = Auth::user();
+
+        return $this->studentRepository->getAll($authUser->school_id)->additional([
+            'message' => 'Lista de estudiantes'
+        ]);
+    }
+
     public function getStudent(int $student): JsonResponse {
         $authUser = Auth::user();
 

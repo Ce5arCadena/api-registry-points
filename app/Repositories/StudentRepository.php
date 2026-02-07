@@ -21,6 +21,10 @@ class StudentRepository {
         return Student::active()->where('id', $id)->where('school_id', $schoolId)->first();
     }
 
+    public function getAll(int $schoolId) {
+        return Student::active()->where('school_id', $schoolId)->paginate()->toResourceCollection();
+    }
+
     public function updateStudent(int $id, int $schoolId, array $data) {
         return $this->getStudentById($id, $schoolId)->update($data);
     }
