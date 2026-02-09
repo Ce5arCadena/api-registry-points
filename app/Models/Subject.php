@@ -23,4 +23,13 @@ class Subject extends Model
     public function pointCategories() {
         return $this->hasMany(PointCategory::class);
     }
+    public function teacherAssignments()
+    {
+        return $this->hasMany(TeacherSubject::class);
+    }
+
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class, 'teacher_subjects');
+    }
 }
