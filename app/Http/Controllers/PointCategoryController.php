@@ -6,6 +6,7 @@ use App\Models\PointCategory;
 use App\Http\Services\PointCategoryService;
 use App\Http\Requests\StorePointCategoryRequest;
 use App\Http\Requests\UpdatePointCategoryRequest;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PointCategoryController extends Controller
 {
@@ -61,9 +62,16 @@ class PointCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePointCategoryRequest $request, PointCategory $pointCategory)
+    public function update(UpdatePointCategoryRequest $request, int $pointCategory) 
     {
-        //
+        try {
+            // return $this->pointCategoryService->createPointCategory($request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al editar la categoría de puntos.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**

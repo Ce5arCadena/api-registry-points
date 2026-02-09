@@ -41,7 +41,7 @@ class StorePointCategoryRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'max_points.required' => 'El puntaje máximo es obligatorio.',

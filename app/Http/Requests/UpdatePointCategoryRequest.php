@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePointCategoryRequest extends FormRequest
@@ -11,7 +14,7 @@ class UpdatePointCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +24,20 @@ class UpdatePointCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $auth = Auth::user();
         return [
-            //
+            'max_points' => 'sometimes|required|numeric|min:1',
+            'subject' => [
+                'required',
+                'numeric',
+                Rule::exists('subjects', 'id')->where(fn (Builder $query) => $query->where('school_id', $auth->school_id)) 
+            ],
+            'name' => [
+                'required',
+                'max:255',
+                Rule::unique('point_categories')
+                    ->where(fn (Builder $query) => $query->where('school_id', $auth->school_id)->where('subject_id', $this->input('subject')))
+            ]
         ];
     }
 }
