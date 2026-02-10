@@ -9,6 +9,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\PointCategoryController;
+use App\Http\Controllers\TeacherSubjectController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/auth/create-admin', [UserController::class, 'createSuperAdmin']);
@@ -83,4 +84,16 @@ Route::middleware(['auth:sanctum','abilities:teacher:point-categories'])
         Route::get('{category}', 'show');
         Route::put('{category}', 'update');
         Route::delete('{category}', 'destroy');
+    });
+
+// Rutas de asignación de materias a profesores
+Route::middleware(['auth:sanctum','abilities:school:teachers_subjects'])
+    ->prefix('teachers-subjects')
+    ->controller(TeacherSubjectController::class)
+    ->group(function() {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{teacherSubject}', 'show');
+        Route::put('{teacherSubject}', 'update');
+        Route::delete('{teacherSubject}', 'destroy');
     });

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreTeacherSubjectRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class StoreTeacherSubjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +23,40 @@ class StoreTeacherSubjectRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userAuth = Auth::user();
+        $year = date('Y');
         return [
-            //
+            "teacher" => [
+                "required",
+                "numeric",
+                "min:1",
+                Rule::exists('teachers', 'id')->where(function ($query) use ($userAuth) {
+                    $query->where('school_id', $userAuth->school_id);
+                })
+            ],
+            "subject" => [
+                "required",
+                "numeric",
+                "min:1",
+                Rule::exists('subjects', 'id')->where(function ($query) use ($userAuth) {
+                    $query->where('school_id', $userAuth->school_id);
+                })
+            ],
+            "academic_year"=> "nullable|in:". $year,
+        ];
+    }
+
+    public function messages()
+    {
+        $year = date('Y');
+        return [
+            'teacher.required' => 'El profesor es obligatorio',
+            'teacher.numeric' => 'El profesor debe ser un valor numérico',
+            'teacher.exists' => 'El profesor seleccionado no existe',
+            'subject.required' => 'La materia es obligatoria',
+            'subject.numeric' => 'La materia debe ser un valor numérico',
+            'subject.exists' => 'La materia seleccionada no existe',
+            'academic_year.in' => 'El año académico debe ser ' . $year,
         ];
     }
 }

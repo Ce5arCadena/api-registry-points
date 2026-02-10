@@ -21,7 +21,8 @@ class AuthService {
                 'school:students',
                 'school:grades',
                 'school:subjects',
-                'school:teachers'
+                'school:teachers',
+                'school:teachers_subjects'
             ])->plainTextToken;
         } else if( $user->role === 'TEACHER') {
             $token = $user->createToken('api-token', [
