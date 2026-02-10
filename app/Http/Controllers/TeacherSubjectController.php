@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\TeacherSubject;
+use App\Http\Services\TeacherSubjectService;
 use App\Http\Requests\StoreTeacherSubjectRequest;
 use App\Http\Requests\UpdateTeacherSubjectRequest;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TeacherSubjectController extends Controller
 {
+    public function __construct(protected TeacherSubjectService $teacherSubjectService) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +33,14 @@ class TeacherSubjectController extends Controller
      */
     public function store(StoreTeacherSubjectRequest $request)
     {
-        //
+        try {
+            return $this->teacherSubjectService->asignSubjectToTeacher($request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al asignar la materia.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

@@ -40,6 +40,10 @@ class StoreTeacherSubjectRequest extends FormRequest
                 "min:1",
                 Rule::exists('subjects', 'id')->where(function ($query) use ($userAuth) {
                     $query->where('school_id', $userAuth->school_id);
+                }),
+                Rule::unique('teacher_subject', 'subject_id')->where(function ($query) use ($userAuth) {
+                    $query->where('teacher_id', $this->input('teacher'))
+                    ->where('school_id', $userAuth->school_id);
                 })
             ],
             "academic_year"=> "nullable|in:". $year,
@@ -56,6 +60,7 @@ class StoreTeacherSubjectRequest extends FormRequest
             'subject.required' => 'La materia es obligatoria',
             'subject.numeric' => 'La materia debe ser un valor numérico',
             'subject.exists' => 'La materia seleccionada no existe',
+            'subject.unique' => 'Esta materia ya está asignada a este profesor en tu escuela',
             'academic_year.in' => 'El año académico debe ser ' . $year,
         ];
     }
