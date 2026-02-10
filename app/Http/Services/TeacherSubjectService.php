@@ -26,4 +26,8 @@ class TeacherSubjectService {
             'data' => new TeacherSubjectResource($teacherSubject)
         ]);
     }
+
+    public function updateAsignSubjectToTeacher() {
+        
+    }
 }
