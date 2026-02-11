@@ -46,9 +46,16 @@ class TeacherSubjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TeacherSubject $teacherSubject)
+    public function show(int $teacherSubject): JsonResponse
     {
-        //
+        try {
+            return $this->teacherSubjectService->getTeacherSubject($teacherSubject);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar la asignación de la materia.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

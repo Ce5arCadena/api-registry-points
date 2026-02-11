@@ -13,7 +13,7 @@ class TeacherSubjectService {
 
     public function __construct(protected TeacherSubjectRepository $teacherSubjectRepository) {}
 
-    public function asignSubjectToTeacher(StoreTeacherSubjectRequest $requests) {
+    public function asignSubjectToTeacher(StoreTeacherSubjectRequest $requests): JsonResponse {
         $authUser = Auth::user();
         $fields = $requests->validated();
 
@@ -30,7 +30,7 @@ class TeacherSubjectService {
         ]);
     }
 
-    public function updateAsignSubjectToTeacher(UpdateTeacherSubjectRequest $request, int $teacherSubjectId) {
+    public function updateAsignSubjectToTeacher(UpdateTeacherSubjectRequest $request, int $teacherSubjectId): JsonResponse {
         $authUser = Auth::user();
         $fields = $request->validated();
 
@@ -79,7 +79,24 @@ class TeacherSubjectService {
         ]);
     }
 
-    public function deleteTeacherSubject(int $teacherSubjectId) {
+    public function getTeacherSubject(int $teacherSubjectId): JsonResponse {
+        $authUser = Auth::user();
+
+        $teacherSubject = $this->teacherSubjectRepository->getTeacherSubjectById($teacherSubjectId, $authUser->school_id);
+        if (!$teacherSubject) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el registro especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'message' => 'Asignación de materia.',
+            'data' => new TeacherSubjectResource($teacherSubject)
+        ]);
+    }
+
+    public function deleteTeacherSubject(int $teacherSubjectId): JsonResponse {
         $authUser = Auth::user();
 
         $teacherSubject = $this->teacherSubjectRepository->getTeacherSubjectById($teacherSubjectId, $authUser->school_id);
