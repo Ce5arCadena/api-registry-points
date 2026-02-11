@@ -79,6 +79,15 @@ class TeacherSubjectService {
         ]);
     }
 
+    public function getAllTeachersSubjects() {
+        $authUser = Auth::user();
+        $teachers = $this->teacherSubjectRepository->getAllTeachersSubjects($authUser->school_id);
+
+        return $teachers->additional([
+            'message' => 'Lista de asignación de materias'
+        ]);
+    }
+
     public function getTeacherSubject(int $teacherSubjectId): JsonResponse {
         $authUser = Auth::user();
 

@@ -10,6 +10,13 @@ class TeacherSubjectRepository {
         return TeacherSubject::create($fields);
     }
 
+    public function getAllTeachersSubjects(int $schoolId) {
+        return TeacherSubject::active()
+            ->where('school_id', $schoolId)
+            ->paginate()
+            ->toResourceCollection();
+    }
+
     public function getTeacherSubjectById(int $id, int $schoolId) {
         return TeacherSubject::active()
             ->where("id", $id)

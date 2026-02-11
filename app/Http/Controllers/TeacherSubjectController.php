@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TeacherSubject;
 use App\Http\Services\TeacherSubjectService;
 use App\Http\Requests\StoreTeacherSubjectRequest;
 use App\Http\Requests\UpdateTeacherSubjectRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class TeacherSubjectController extends Controller
 {
@@ -15,17 +15,16 @@ class TeacherSubjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse|ResourceCollection
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        try {
+            return $this->teacherSubjectService->getAllTeachersSubjects();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar la asignación de materias.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
@@ -56,14 +55,6 @@ class TeacherSubjectController extends Controller
                 'errors' => [$e->getMessage()]
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TeacherSubject $teacherSubject)
-    {
-        //
     }
 
     /**
