@@ -64,14 +64,14 @@ class TeacherSubjectController extends Controller
      */
     public function update(UpdateTeacherSubjectRequest $request, int $teacherSubject)
     {
-        // try {
-        //     return $this->teacherSubjectService->asignSubjectToTeacher($request);
-        // } catch (\Throwable $e) {
-        //     return response()->json([
-        //         'message' => 'Ocurrió un error al asignar la materia.',
-        //         'errors' => [$e->getMessage()]
-        //     ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-        // }
+        try {
+            return $this->teacherSubjectService->updateAsignSubjectToTeacher($request, $teacherSubject);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar la asignación de la materia.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
