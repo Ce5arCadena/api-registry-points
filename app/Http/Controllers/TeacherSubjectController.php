@@ -31,7 +31,7 @@ class TeacherSubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTeacherSubjectRequest $request)
+    public function store(StoreTeacherSubjectRequest $request): JsonResponse
     {
         try {
             return $this->teacherSubjectService->asignSubjectToTeacher($request);
@@ -62,7 +62,7 @@ class TeacherSubjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTeacherSubjectRequest $request, int $teacherSubject)
+    public function update(UpdateTeacherSubjectRequest $request, int $teacherSubject): JsonResponse
     {
         try {
             return $this->teacherSubjectService->updateAsignSubjectToTeacher($request, $teacherSubject);
@@ -77,8 +77,15 @@ class TeacherSubjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TeacherSubject $teacherSubject)
+    public function destroy(int $teacherSubject): JsonResponse
     {
-        //
+        try {
+            return $this->teacherSubjectService->deleteTeacherSubject($teacherSubject);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al eliminar la asignación de la materia.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }

@@ -78,4 +78,25 @@ class TeacherSubjectService {
             'data' => new TeacherSubjectResource($teacherSubject->fresh())
         ]);
     }
+
+    public function deleteTeacherSubject(int $teacherSubjectId) {
+        $authUser = Auth::user();
+
+        $teacherSubject = $this->teacherSubjectRepository->getTeacherSubjectById($teacherSubjectId, $authUser->school_id);
+        if (!$teacherSubject) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el registro especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $this->teacherSubjectRepository->updateTeacherSubject($teacherSubject->id, $authUser->school_id, [
+            'status' => 'INACTIVE'
+        ]);
+
+        return response()->json([
+            'message' => 'Asignación de materia eliminada.',
+            'data' => new TeacherSubjectResource($teacherSubject->fresh())
+        ]);
+    }
 }
