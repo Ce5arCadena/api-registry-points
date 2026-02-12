@@ -13,6 +13,7 @@ class PointCategory extends Model
     protected $fillable = [
         "name",
         "max_points",
+        "teacher_id",
         "subject_id",
         "school_id",
         "status"
@@ -24,5 +25,9 @@ class PointCategory extends Model
 
     public function subject() {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function teacher() {
+        return $this->belongsTo(Teacher::class);
     }
 }

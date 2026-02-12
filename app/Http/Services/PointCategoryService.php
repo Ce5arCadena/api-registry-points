@@ -30,8 +30,22 @@ class PointCategoryService {
             ], JsonResponse::HTTP_CONFLICT);
         }
 
+        $pointCategory = $this->pointCategoryRepository->getPointCategoryByName([
+            "name" => $data["name"],
+            "teacher_id" => $teacher->id,
+            "subject_id" => $subjectAssign->subject_id,
+            "school_id" => $authUser->school_id
+        ]);
+        if ($pointCategory) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['Ya tienes una categoria con el mismo nombre.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        }
+
         $pointCategory = $this->pointCategoryRepository->createPointCategory([
             ...$data,
+            "teacher_id" => $teacher->id,
             "subject_id" => $data["subject"],
             "school_id" => $authUser->school_id
         ]);

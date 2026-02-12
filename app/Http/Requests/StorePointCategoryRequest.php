@@ -34,9 +34,7 @@ class StorePointCategoryRequest extends FormRequest
             ],
             'name' => [
                 'required',
-                'max:255',
-                Rule::unique('point_categories')
-                    ->where(fn (Builder $query) => $query->where('school_id', $auth->school_id)->where('subject_id', $this->input('subject')))
+                'max:255'
             ]
         ];
     }
@@ -52,7 +50,6 @@ class StorePointCategoryRequest extends FormRequest
             'name.required' => 'El nombre de la categoría es obligatorio.',
             'name.string' => 'El nombre debe ser un texto válido.',
             'name.max' => 'El nombre no puede tener más de 255 caracteres.',
-            'name.unique' => 'Ya existe una categoría con este nombre para esta asignatura en tu institución.',
         ];
     }
 }
