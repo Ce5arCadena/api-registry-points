@@ -28,11 +28,13 @@ class UpdatePointCategoryRequest extends FormRequest
         return [
             'max_points' => 'sometimes|required|numeric|min:1',
             'subject' => [
+                'sometimes',
                 'required',
                 'numeric',
                 Rule::exists('subjects', 'id')->where(fn (Builder $query) => $query->where('school_id', $auth->school_id)) 
             ],
             'name' => [
+                'sometimes',
                 'required',
                 'max:255',
                 Rule::unique('point_categories')

@@ -31,7 +31,7 @@ class PointCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePointCategoryRequest $request)
+    public function store(StorePointCategoryRequest $request): JsonResponse
     {
         try {
             return $this->pointCategoryService->createPointCategory($request);
