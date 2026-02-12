@@ -27,6 +27,13 @@ class TeacherRepository {
             ->first();
     }
 
+    public function getTeacherByUserId(int $userId, int $schoolId) {
+        return Teacher::active()
+            ->where('user_id', $userId)
+            ->where('school_id', $schoolId)
+            ->first();
+    }
+
     public function getAllTeachers(int $schoolId) {
         return Teacher::active()
             ->where('school_id', $schoolId)

@@ -24,6 +24,14 @@ class TeacherSubjectRepository {
             ->first();
     }
 
+    public function getBySubjectAndteacher(int $teacherId, int $subjectId, int $schoolId) {
+        return TeacherSubject::active()
+            ->where("teacher_id", $teacherId)
+            ->where("subject_id", $subjectId)
+            ->where('school_id', $schoolId)
+            ->first();
+    }
+
     public function getTeacherSubjectBySubject(array $fields) {
         return TeacherSubject::active()
             ->where('id', '!=', $fields['id'])
