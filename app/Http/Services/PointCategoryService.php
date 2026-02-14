@@ -87,27 +87,12 @@ class PointCategoryService {
             $fields["subject_id"] = $data["subject"];  
         }
 
-        if (isset($data["name"]) && !isset($data["subject"])) {
+        $valueSubject = $data["subject"] ?? $pointCategory->subject_id;
+        if (isset($data["name"])) {
             $pointCategoryByName = $this->pointCategoryRepository->getPointCategoryByName([
                 "name" => $data["name"],
                 "teacher_id" => $teacher->id,
-                "subject_id" => $pointCategory->subject_id,
-                "school_id" => $authUser->school_id
-            ]);
-            if ($pointCategoryByName && $pointCategoryByName->id !== $pointCategory->id) {
-                return response()->json([
-                    'message' => 'Error al procesar la solicitud.',
-                    'errors' => ['Ya tienes una categoria con el mismo nombre.'],
-                ], JsonResponse::HTTP_CONFLICT);
-            }
-            $fields["name"] = $data["name"];  
-        }
-
-        if (isset($data["name"]) && isset($data["subject"])) {
-            $pointCategoryByName = $this->pointCategoryRepository->getPointCategoryByName([
-                "name" => $data["name"],
-                "teacher_id" => $teacher->id,
-                "subject_id" => $data["subject"],
+                "subject_id" => $valueSubject,
                 "school_id" => $authUser->school_id
             ]);
             if ($pointCategoryByName && $pointCategoryByName->id !== $pointCategory->id) {
@@ -117,7 +102,7 @@ class PointCategoryService {
                 ], JsonResponse::HTTP_CONFLICT);
             }
             $fields["name"] = $data["name"];
-            $fields["subject_id"] = $data["subject"];    
+            if (isset($data["subject"])) $fields["subject_id"] = $data["subject"];    
         }
 
         if (isset($data["max_points"])) $fields["max_pointse"] = $data["max_points"];
