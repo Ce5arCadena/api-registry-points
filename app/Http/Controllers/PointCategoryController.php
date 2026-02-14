@@ -65,7 +65,7 @@ class PointCategoryController extends Controller
     public function update(UpdatePointCategoryRequest $request, int $pointCategory) 
     {
         try {
-            // return $this->pointCategoryService->createPointCategory($request);
+            return $this->pointCategoryService->updatePointCategory($request, $pointCategory);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al editar la categoría de puntos.',
