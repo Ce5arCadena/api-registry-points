@@ -21,6 +21,7 @@ class TeacherSubjectService {
             ...$fields,
             "teacher_id" => $fields["teacher"],
             "subject_id" => $fields["subject"],
+            "grade_id" => $fields["grade"],
             "school_id" => $authUser->school_id
         ]);
 

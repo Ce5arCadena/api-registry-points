@@ -34,6 +34,14 @@ class StoreTeacherSubjectRequest extends FormRequest
                     $query->where('school_id', $userAuth->school_id);
                 })
             ],
+            "grade" => [
+                "required",
+                "numeric",
+                "min:1",
+                Rule::exists('grades', 'id')->where(function ($query) use ($userAuth) {
+                    $query->where('school_id', $userAuth->school_id);
+                })
+            ],
             "subject" => [
                 "required",
                 "numeric",
@@ -43,6 +51,7 @@ class StoreTeacherSubjectRequest extends FormRequest
                 }),
                 Rule::unique('teacher_subject', 'subject_id')->where(function ($query) use ($userAuth) {
                     $query->where('teacher_id', $this->input('teacher'))
+                    ->where('grade_id', $this->input('grade'))
                     ->where('school_id', $userAuth->school_id);
                 })
             ],
@@ -57,6 +66,9 @@ class StoreTeacherSubjectRequest extends FormRequest
             'teacher.required' => 'El profesor es obligatorio',
             'teacher.numeric' => 'El profesor debe ser un valor numérico',
             'teacher.exists' => 'El profesor seleccionado no existe',
+            'grade.required' => 'El curso es obligatorio',
+            'grade.numeric' => 'El curso debe ser un valor numérico',
+            'grade.exists' => 'El curso seleccionado no existe',
             'subject.required' => 'La materia es obligatoria',
             'subject.numeric' => 'La materia debe ser un valor numérico',
             'subject.exists' => 'La materia seleccionada no existe',

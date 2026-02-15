@@ -11,6 +11,7 @@ class TeacherSubject extends Model
     protected $fillable = [
         "teacher_id",
         "subject_id",
+        "grade_id",
         "school_id",
         "academic_year",
         "status",
@@ -27,5 +28,9 @@ class TeacherSubject extends Model
     public function subject()
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function grade() {
+        return $this->belongsTo(Grade::class);
     }
 }
