@@ -119,6 +119,16 @@ class PointCategoryService {
         ]);
     }
 
+    public function getPointsCategories() {
+        $authUser = Auth::user();
+
+        $pointCategories = $this->pointCategoryRepository->getPointsCategories($authUser->school_id);
+
+        return $pointCategories->additional([
+            "message" => "Lista de categorías de puntos."
+        ]);
+    }
+
     public function getPointCategory(int $pointCategoryId) {
         $authUser = Auth::user();
 

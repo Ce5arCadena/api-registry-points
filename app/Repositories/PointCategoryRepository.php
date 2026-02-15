@@ -5,6 +5,13 @@ namespace App\Repositories;
 use App\Models\PointCategory;
 
 class PointCategoryRepository {
+    public function getPointsCategories(int $schoolId) {
+        return PointCategory::active()
+            ->where("school_id", $schoolId)
+            ->paginate()
+            ->toResourceCollection();
+    }
+
     public function createPointCategory(array $fields) {
         return PointCategory::create($fields);
     }

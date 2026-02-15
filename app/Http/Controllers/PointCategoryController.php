@@ -17,7 +17,14 @@ class PointCategoryController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            return $this->pointCategoryService->getPointsCategories();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al crear listar las categorías de puntos.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
