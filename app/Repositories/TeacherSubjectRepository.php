@@ -36,6 +36,7 @@ class TeacherSubjectRepository {
         return TeacherSubject::active()
             ->where('id', '!=', $fields['id'])
             ->where('teacher_id', $fields['teacher_id'])
+            ->where('grade_id', $fields['grade_id'])
             ->where('subject_id', $fields['subject_id'])
             ->where('school_id', $fields['school_id'])
             ->first();

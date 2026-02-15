@@ -44,30 +44,33 @@ class TeacherSubjectService {
         }
 
         $fieldsUpdate = [];
+        $gradeId = $fields['grade'] ?? $teacherSubject->grade_id;
         $teacherId = $fields['teacher'] ?? $teacherSubject->teacher_id;
         $subjectId = $fields['subject'] ?? $teacherSubject->subject_id;
 
-        if (isset($fields['teacher']) || isset($fields['subject'])) {
-            $getTeacherSubjectBySubject = $this->teacherSubjectRepository->getTeacherSubjectBySubject([
-                'id' => $teacherSubject->id,
-                'teacher_id' => $teacherId,
-                'subject_id' => $subjectId,
-                'school_id' => $authUser->school_id,
-            ]);
+        $getTeacherSubjectBySubject = $this->teacherSubjectRepository->getTeacherSubjectBySubject([
+            'id' => $teacherSubject->id,
+            'teacher_id' => $teacherId,
+            'subject_id' => $subjectId,
+            'grade_id' => $gradeId,
+            'school_id' => $authUser->school_id,
+        ]);
 
-            if ($getTeacherSubjectBySubject) {
-                return response()->json([
-                    'message' => 'Error al procesar la solicitud.',
-                    'errors' => ['Esta materia ya está asignada a este profesor.'],
-                ], JsonResponse::HTTP_CONFLICT);
-            }
+        if ($getTeacherSubjectBySubject) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['Esta materia ya está asignada a este profesor.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        }
 
-            if (isset($fields['teacher'])) {
-                $fieldsUpdate['teacher_id'] = $fields['teacher'];
-            }
-            if (isset($fields['subject'])) {
-                $fieldsUpdate['subject_id'] = $fields['subject'];
-            }
+        if (isset($fields['teacher'])) {
+            $fieldsUpdate['teacher_id'] = $fields['teacher'];
+        }
+        if (isset($fields['subject'])) {
+            $fieldsUpdate['subject_id'] = $fields['subject'];
+        }
+        if (isset($fields['grade'])) {
+            $fieldsUpdate['grade_id'] = $fields['grade'];
         }
 
 

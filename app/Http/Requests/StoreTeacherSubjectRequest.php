@@ -31,7 +31,8 @@ class StoreTeacherSubjectRequest extends FormRequest
                 "numeric",
                 "min:1",
                 Rule::exists('teachers', 'id')->where(function ($query) use ($userAuth) {
-                    $query->where('school_id', $userAuth->school_id);
+                    $query->where('school_id', $userAuth->school_id)
+                    ->where('status', 'ACTIVE');
                 })
             ],
             "grade" => [
@@ -39,7 +40,8 @@ class StoreTeacherSubjectRequest extends FormRequest
                 "numeric",
                 "min:1",
                 Rule::exists('grades', 'id')->where(function ($query) use ($userAuth) {
-                    $query->where('school_id', $userAuth->school_id);
+                    $query->where('school_id', $userAuth->school_id)
+                    ->where('status', 'ACTIVE');
                 })
             ],
             "subject" => [
@@ -47,7 +49,8 @@ class StoreTeacherSubjectRequest extends FormRequest
                 "numeric",
                 "min:1",
                 Rule::exists('subjects', 'id')->where(function ($query) use ($userAuth) {
-                    $query->where('school_id', $userAuth->school_id);
+                    $query->where('school_id', $userAuth->school_id)
+                    ->where('status', 'ACTIVE');
                 }),
                 Rule::unique('teacher_subject', 'subject_id')->where(function ($query) use ($userAuth) {
                     $query->where('teacher_id', $this->input('teacher'))
