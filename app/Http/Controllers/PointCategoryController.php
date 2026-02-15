@@ -46,9 +46,16 @@ class PointCategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PointCategory $pointCategory)
+    public function show(int $pointCategory): JsonResponse
     {
-        //
+        try {
+            return $this->pointCategoryService->getPointCategory($pointCategory);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar la categoría de puntos.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
