@@ -118,4 +118,56 @@ class PointCategoryService {
             'data' => new PointCategoryResource($pointCategory->fresh()),
         ]);
     }
+
+    public function getPointCategory(int $pointCategoryId) {
+        $authUser = Auth::user();
+
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
+        $pointCategory = $this->pointCategoryRepository->getPointCategoryById([
+            'id' => $pointCategoryId,
+            'teacher_id' => $teacher->id,
+            'school_id' => $authUser->school_id
+        ]);
+        if (!$pointCategory) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe la categoría de puntos especificada.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'message' => 'Categoria de puntos eliminada.',
+            'data' => new PointCategoryResource($pointCategory)
+        ]);
+    }
+
+    public function deletePointCategory(int $pointCategoryId): JsonResponse {
+        $authUser = Auth::user();
+
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
+        $pointCategory = $this->pointCategoryRepository->getPointCategoryById([
+            'id' => $pointCategoryId,
+            'teacher_id' => $teacher->id,
+            'school_id' => $authUser->school_id
+        ]);
+        if (!$pointCategory) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe la categoría de puntos especificada.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $this->pointCategoryRepository->updateCategoryPoint([
+            "id" => $pointCategoryId,
+            "teacher_id" => $teacher->id,
+            "school_id" => $authUser->school_id
+        ], [
+            "status" => "INACTIVE"
+        ]);
+
+        return response()->json([
+            'message' => 'Categoria de puntos eliminada.',
+            'data' => new PointCategoryResource($pointCategory->fresh()),
+        ]);
+    }
 }

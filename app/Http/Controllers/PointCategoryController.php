@@ -77,8 +77,15 @@ class PointCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PointCategory $pointCategory)
+    public function destroy(int $pointCategory): JsonResponse
     {
-        //
+        try {
+            return $this->pointCategoryService->deletePointCategory($pointCategory);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al eliminar la categoría de puntos.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 }
