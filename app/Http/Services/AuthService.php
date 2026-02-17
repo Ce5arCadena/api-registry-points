@@ -26,7 +26,8 @@ class AuthService {
             ])->plainTextToken;
         } else if( $user->role === 'TEACHER') {
             $token = $user->createToken('api-token', [
-                'teacher:point-categories',
+                'teacher:point_categories',
+                'teacher:registry_points',
             ])->plainTextToken;
         } else {
             $token = $user->createToken('api-token')->plainTextToken;

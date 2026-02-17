@@ -9,6 +9,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\PointCategoryController;
+use App\Http\Controllers\RegistryPointController;
 use App\Http\Controllers\TeacherSubjectController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -75,7 +76,7 @@ Route::middleware(['auth:sanctum','abilities:school:students'])
     });
 
 // Rutas de categoría de puntos
-Route::middleware(['auth:sanctum','abilities:teacher:point-categories'])
+Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
     ->prefix('point-categories')
     ->controller(PointCategoryController::class)
     ->group(function() {
@@ -96,4 +97,16 @@ Route::middleware(['auth:sanctum','abilities:school:teachers_subjects'])
         Route::get('{teacherSubject}', 'show');
         Route::put('{teacherSubject}', 'update');
         Route::delete('{teacherSubject}', 'destroy');
+    });
+
+// Rutas de asignación de puntos a estudiantes
+Route::middleware(['auth:sanctum','abilities:teacher:registry_points'])
+    ->prefix('registry-points')
+    ->controller(RegistryPointController::class)
+    ->group(function() {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{registryPoint}', 'show');
+        Route::put('{registryPoint}', 'update');
+        Route::delete('{registryPoint}', 'destroy');
     });
