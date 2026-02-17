@@ -48,4 +48,14 @@ class TeacherSubjectRepository {
             ->where('school_id', $schoolId)
             ->update($fields);
     }
+
+    public function getTeacherSubjectByYear(array $fields) {
+        return TeacherSubject::active()
+            ->where('teacher_id', $fields['teacher_id'])
+            ->where('grade_id', $fields['grade_id'])
+            ->where('subject_id', $fields['subject_id'])
+            ->where('school_id', $fields['school_id'])
+            ->where('academic_year', $fields['year'])
+            ->first();
+    }
 }

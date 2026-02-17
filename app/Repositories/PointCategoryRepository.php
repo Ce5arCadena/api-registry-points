@@ -33,6 +33,15 @@ class PointCategoryRepository {
             ->first();
     }
 
+    public function getPointCategoryByIdAndSubject(array $fields) {
+        return PointCategory::active()
+            ->where('id', $fields['id'])
+            ->where('teacher_id', $fields['teacher_id'])
+            ->where('subject_id', $fields['subject_id'])
+            ->where('school_id', $fields['school_id'])
+            ->first();
+    }
+
     public function updateCategoryPoint(array $fieldsConditions, array $newData) {
         return PointCategory::active()
             ->where('id', $fieldsConditions['id'])
