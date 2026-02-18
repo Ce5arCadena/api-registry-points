@@ -86,4 +86,15 @@ class TeacherSubjectController extends Controller
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
+
+    public function myGrades(): JsonResponse {
+        try {
+            return $this->teacherSubjectService->getGradesByTeacher();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al obtener tus cursos.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
+    }
 }

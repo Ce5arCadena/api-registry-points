@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\TeacherSubject;
 
 class TeacherSubjectRepository {
-
     public function asignSubjectToTeacher(array $fields) {
         return TeacherSubject::create($fields);
     }
@@ -57,5 +56,13 @@ class TeacherSubjectRepository {
             ->where('school_id', $fields['school_id'])
             ->where('academic_year', $fields['year'])
             ->first();
+    }
+
+    public function getGradesByTeacher(array $fields) {
+        return TeacherSubject::active()
+            ->where('school_id', $fields['school_id'])
+            ->where('teacher_id', $fields['teacher_id'])
+            ->where('academic_year', $fields['year'])
+            ->get();
     }
 }

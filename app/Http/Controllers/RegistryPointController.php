@@ -18,7 +18,14 @@ class RegistryPointController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar la asignación de puntos.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

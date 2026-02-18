@@ -99,6 +99,14 @@ Route::middleware(['auth:sanctum','abilities:school:teachers_subjects'])
         Route::delete('{teacherSubject}', 'destroy');
     });
 
+// Obtiene los cursos asociados al maestro
+Route::middleware(['auth:sanctum','abilities:teacher:get_grades'])
+    ->prefix('teacher')
+    ->controller(TeacherSubjectController::class)
+    ->group(function() {
+        Route::get('/grades', 'myGrades');
+    });
+
 // Rutas de asignación de puntos a estudiantes
 Route::middleware(['auth:sanctum','abilities:teacher:registry_points'])
     ->prefix('registry-points')

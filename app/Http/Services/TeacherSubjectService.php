@@ -2,7 +2,9 @@
 
 namespace App\Http\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\TeacherRepository;
 use App\Repositories\TeacherSubjectRepository;
 use App\Http\Resources\TeacherSubjectResource;
 use App\Http\Requests\StoreTeacherSubjectRequest;
@@ -11,7 +13,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TeacherSubjectService {
 
-    public function __construct(protected TeacherSubjectRepository $teacherSubjectRepository) {}
+    public function __construct(
+        protected TeacherRepository $teacherRepository,
+        protected TeacherSubjectRepository $teacherSubjectRepository,
+    ) {}
 
     public function asignSubjectToTeacher(StoreTeacherSubjectRequest $requests): JsonResponse {
         $authUser = Auth::user();
@@ -127,6 +132,22 @@ class TeacherSubjectService {
         return response()->json([
             'message' => 'Asignación de materia eliminada.',
             'data' => new TeacherSubjectResource($teacherSubject->fresh())
+        ]);
+    }
+
+    public function getGradesByTeacher(): JsonResponse {
+        $authUser = Auth::user();
+
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
+        $grades = $this->teacherSubjectRepository->getGradesByTeacher([
+            "year" => Carbon::now()->year,
+            "teacher_id" => $teacher->id,
+            "school_id" => $authUser->school_id
+        ]);
+        
+        return response()->json([
+            'message' => 'Tus cursos asignados.',
+            'data' => TeacherSubjectResource::collection($grades)
         ]);
     }
 }
