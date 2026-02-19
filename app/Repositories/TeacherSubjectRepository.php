@@ -58,11 +58,18 @@ class TeacherSubjectRepository {
             ->first();
     }
 
-    public function getGradesByTeacher(array $fields) {
-        return TeacherSubject::active()
-            ->where('school_id', $fields['school_id'])
-            ->where('teacher_id', $fields['teacher_id'])
-            ->where('academic_year', $fields['year'])
-            ->get();
+    public function getTeacherSubjects(array $filters = [])
+    {
+        $query = TeacherSubject::active()
+            ->where('school_id', $filters['school_id'])
+            ->where('teacher_id', $filters['teacher_id'])
+            ->where('academic_year', $filters['year']);
+        
+        if (isset($filters['grade_id'])) {
+            return $query->where('grade_id', $filters['grade_id'])
+                ->first();
+        }
+        
+        return $query->get();
     }
 }

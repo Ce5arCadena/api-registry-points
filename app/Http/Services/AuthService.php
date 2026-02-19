@@ -29,6 +29,7 @@ class AuthService {
                 'teacher:get_grades',
                 'teacher:registry_points',
                 'teacher:point_categories',
+                'teacher:grades.view_students',
             ])->plainTextToken;
         } else {
             $token = $user->createToken('api-token')->plainTextToken;

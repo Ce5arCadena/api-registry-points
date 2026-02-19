@@ -97,4 +97,15 @@ class TeacherSubjectController extends Controller
             ]);
         }
     }
+
+    public function studentsByGrade(int $gradeId): JsonResponse {
+        try {
+            return $this->teacherSubjectService->getStudentsByGrade($gradeId);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al obtener los estudiantes del curso.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
+    }
 }

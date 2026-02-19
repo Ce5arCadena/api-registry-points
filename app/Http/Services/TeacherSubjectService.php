@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\TeacherRepository;
+use App\Http\Resources\GradeStudentResource;
 use App\Repositories\TeacherSubjectRepository;
 use App\Http\Resources\TeacherSubjectResource;
 use App\Http\Requests\StoreTeacherSubjectRequest;
@@ -139,7 +140,7 @@ class TeacherSubjectService {
         $authUser = Auth::user();
 
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
-        $grades = $this->teacherSubjectRepository->getGradesByTeacher([
+        $grades = $this->teacherSubjectRepository->getTeacherSubjects([
             "year" => Carbon::now()->year,
             "teacher_id" => $teacher->id,
             "school_id" => $authUser->school_id
@@ -148,6 +149,23 @@ class TeacherSubjectService {
         return response()->json([
             'message' => 'Tus cursos asignados.',
             'data' => TeacherSubjectResource::collection($grades)
+        ]);
+    }
+
+    public function getStudentsByGrade(int $gradeId): JsonResponse {
+        $authUser = Auth::user();
+
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
+        $gradeWithStudents = $this->teacherSubjectRepository->getTeacherSubjects([
+            "year" => Carbon::now()->year,
+            "teacher_id" => $teacher->id,
+            "school_id" => $authUser->school_id,
+            "grade_id" => $gradeId
+        ]);
+        
+        return response()->json([
+            'message' => 'Estudiante del curso.',
+            'data' => new GradeStudentResource($gradeWithStudents)
         ]);
     }
 }
