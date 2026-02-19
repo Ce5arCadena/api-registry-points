@@ -30,4 +30,10 @@ class Grade extends Model
     {
         return $this->hasMany(TeacherSubject::class);
     }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'teacher_subject')
+            ->where('academic_year', now()->year);
+    }
 }
