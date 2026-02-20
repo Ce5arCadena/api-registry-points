@@ -17,7 +17,10 @@ class GradeResource extends JsonResource
         return [
             "id"=> $this->id,
             "name" => $this->name,
-            "subjects" => $this->when(!$request->has("gradeId"), $this->subjects),
+            "subjects" => $this->when(
+                !$request->has("gradeId"),
+                SubjectWithPointCategoriesResource::collection($this->subjects)
+            ),
             "students" => $this->when($request->has("gradeId"), $this->students)
         ];
     }

@@ -21,7 +21,8 @@ class Subject extends Model
     protected $table = "subjects";
 
     public function pointCategories() {
-        return $this->hasMany(PointCategory::class);
+        return $this->hasMany(PointCategory::class)
+            ->where('status', 'ACTIVE');
     }
     public function teacherAssignments()
     {
