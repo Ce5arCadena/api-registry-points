@@ -109,10 +109,10 @@ Route::middleware(['auth:sanctum','abilities:teacher:get_grades'])
 
 // Obtiene los estudiantes asociados a un curso según el maestro que consulta
 Route::middleware(['auth:sanctum','abilities:teacher:grades.view_students'])
-    ->prefix('grades')
+    ->prefix('teacher/grades')
     ->controller(TeacherSubjectController::class)
     ->group(function() {
-        Route::get('/{gradeId}/students', 'studentsByGrade');
+        Route::get('/{gradeId}/subjects/{subjectId}/students', 'getStudentsWithPoints');
     });
 
 // Rutas de asignación de puntos a estudiantes

@@ -67,6 +67,7 @@ class TeacherSubjectRepository {
         
         if (isset($filters['grade_id'])) {
             return $query->where('grade_id', $filters['grade_id'])
+                ->where('subject_id', $filters['subject_id'])
                 ->first();
         }
         

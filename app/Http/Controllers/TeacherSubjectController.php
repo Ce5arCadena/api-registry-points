@@ -98,9 +98,9 @@ class TeacherSubjectController extends Controller
         }
     }
 
-    public function studentsByGrade(int $gradeId): JsonResponse {
+    public function getStudentsWithPoints(int $gradeId, int $subjectId): JsonResponse {
         try {
-            return $this->teacherSubjectService->getStudentsByGrade($gradeId);
+            return $this->teacherSubjectService->getStudentsWithPoints($gradeId, $subjectId);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al obtener los estudiantes del curso.',

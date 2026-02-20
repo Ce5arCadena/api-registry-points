@@ -27,4 +27,8 @@ class Student extends Model
     public function grade() {
         return $this->belongsTo(Grade::class);
     }
+
+    public function registryPoints() {
+        return $this->hasMany(RegistryPoint::class);
+    }
 }

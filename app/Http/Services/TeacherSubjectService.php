@@ -152,7 +152,7 @@ class TeacherSubjectService {
         ]);
     }
 
-    public function getStudentsByGrade(int $gradeId): JsonResponse {
+    public function getStudentsWithPoints(int $gradeId, int $subjectId): JsonResponse {
         $authUser = Auth::user();
 
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
@@ -160,8 +160,16 @@ class TeacherSubjectService {
             "year" => Carbon::now()->year,
             "teacher_id" => $teacher->id,
             "school_id" => $authUser->school_id,
-            "grade_id" => $gradeId
+            "grade_id" => $gradeId,
+            "subject_id" => $subjectId
         ]);
+
+        if (!$gradeWithStudents) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No existe el registro especificado.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
         
         return response()->json([
             'message' => 'Estudiante del curso.',
