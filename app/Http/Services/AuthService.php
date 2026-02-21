@@ -38,7 +38,8 @@ class AuthService {
         return response()->json([
             'message' => 'Login éxitoso',
             'data' => [
-                'token' => $token
+                'token' => $token,
+                'rol' => "TEACHER"
             ]
         ]);
     }
