@@ -39,7 +39,7 @@ class AuthService {
             'message' => 'Login éxitoso',
             'data' => [
                 'token' => $token,
-                'rol' => "TEACHER"
+                'rol' => $user->role
             ]
         ]);
     }
