@@ -18,7 +18,7 @@ class SchoolRepository {
     }
 
     public function findByName(string $name) {
-        return School::active()->where('name', $name)->first();
+        return School::where('name', $name)->first();
     }
 
     public function getAllSchoolsWithPaginate() {

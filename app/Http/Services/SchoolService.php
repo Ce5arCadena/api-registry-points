@@ -9,11 +9,27 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SchoolService {
     public function __construct(
-        protected SchoolRepository $schoolRepository,
-        protected UserRepository $userRepository
+        protected UserRepository $userRepository,
+        protected SchoolRepository $schoolRepository
     ) {}
 
     public function saveSchool(array $fields): JsonResponse {
+        $schoolExist = $this->schoolRepository->findByName($fields["name"]);
+        if ($schoolExist) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['El colegio ya se encuentra registrado, o está inactivo. Comuniquese.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        }
+
+        $userExist = $this->userRepository->userByEmailWithoutSchool($fields['email']);
+        if ($userExist) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['El correo ya se encuentra registrado.'],
+            ], JsonResponse::HTTP_CONFLICT);
+        }
+
         $userSchool = $this->userRepository->saveUsers([
             'email' => $fields['email'],
             'password' => Hash::make($fields["password"]),

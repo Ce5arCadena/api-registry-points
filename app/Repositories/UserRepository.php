@@ -33,6 +33,11 @@ class UserRepository {
             ->first();
     }
 
+    public function userByEmailWithoutSchool(string $email) {
+        return User::where('email', $email)
+            ->first();
+    }
+
     public function getUserByEmailWithStatus(string $email, int $schoolId) {
         return User::active()
             ->where('email', $email)

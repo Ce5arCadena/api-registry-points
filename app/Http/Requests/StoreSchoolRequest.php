@@ -23,7 +23,7 @@ class StoreSchoolRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name"=> "required|unique:schools,name",
+            "name"=> "required",
             'email' => 'required|email',
             'password' => [
                 'required',
@@ -40,7 +40,7 @@ class StoreSchoolRequest extends FormRequest
     public function messages() {
         return [
             'name.required' => 'El nombre de la institución es obligatorio.',
-            'name.unique'   => 'El nombre de la institución ya se encuentra registrada.',
+            // 'name.unique'   => 'El nombre de la institución ya se encuentra registrada.',
 
             'email.required' => 'El correo electrónico es obligatorio.',
             'email.email'    => 'El correo electrónico no tiene un formato válido.',
