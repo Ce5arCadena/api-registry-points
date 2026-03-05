@@ -19,7 +19,7 @@ class AuthService {
         } else if( $user->role === 'SCHOOL') {
             $token = $user->createToken('api-token', [
                 'school:students',
-                'school:grades',
+                'school:courses',
                 'school:subjects',
                 'school:teachers',
                 'school:teachers_subjects'
@@ -39,7 +39,7 @@ class AuthService {
             'message' => 'Login éxitoso',
             'data' => [
                 'token' => $token,
-                'rol' => $user->role
+                'rol' => $user->role,
             ]
         ]);
     }

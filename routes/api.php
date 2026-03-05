@@ -28,8 +28,8 @@ Route::middleware(['auth:sanctum', 'abilities:admin:schools'])
     });
     
 // Rutas de grados
-Route::middleware(['auth:sanctum','abilities:school:grades'])
-    ->prefix('grades')
+Route::middleware(['auth:sanctum','abilities:school:courses'])
+    ->prefix('courses')
     ->controller(GradeController::class)
     ->group(function() {
         Route::get('/', 'index');
