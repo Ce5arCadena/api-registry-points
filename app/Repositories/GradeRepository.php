@@ -30,7 +30,7 @@ class GradeRepository {
     public function getGrades(int $schoolId) {
         return Grade::active()
             ->where("school_id", $schoolId)
-            ->paginate()
+            ->paginate(50)
             ->toResourceCollection();
     }
 }

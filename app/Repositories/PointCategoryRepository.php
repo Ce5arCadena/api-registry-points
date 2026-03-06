@@ -8,7 +8,7 @@ class PointCategoryRepository {
     public function getPointsCategories(int $schoolId) {
         return PointCategory::active()
             ->where("school_id", $schoolId)
-            ->paginate()
+            ->paginate(50)
             ->toResourceCollection();
     }
 

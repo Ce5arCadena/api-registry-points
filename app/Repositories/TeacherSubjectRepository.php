@@ -12,7 +12,7 @@ class TeacherSubjectRepository {
     public function getAllTeachersSubjects(int $schoolId) {
         return TeacherSubject::active()
             ->where('school_id', $schoolId)
-            ->paginate()
+            ->paginate(50)
             ->toResourceCollection();
     }
 

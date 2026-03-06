@@ -22,7 +22,7 @@ class StudentRepository {
     }
 
     public function getAll(int $schoolId) {
-        return Student::active()->where('school_id', $schoolId)->paginate()->toResourceCollection();
+        return Student::active()->where('school_id', $schoolId)->paginate(50)->toResourceCollection();
     }
 
     public function updateStudent(int $id, int $schoolId, array $data) {

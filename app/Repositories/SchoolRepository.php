@@ -23,8 +23,7 @@ class SchoolRepository {
 
     public function getAllSchoolsWithPaginate() {
         return School::active()
-            // ->with('user')
-            ->paginate()
+            ->paginate(50)
             ->toResourceCollection();
     }
 }
