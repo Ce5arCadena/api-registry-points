@@ -34,8 +34,8 @@ class StoreTeacherRequest extends FormRequest
                     ->uncompromised()
             ],
             'full_name' => 'required',
-            'document' => 'required|numeric:strict|max_digits:12',
-            'phone' => 'required|numeric:strict|max_digits:15'
+            'document' => 'required|digits_between:5,12',
+            'phone'    => 'required|digits:10',
         ];
     }
 
@@ -53,11 +53,9 @@ class StoreTeacherRequest extends FormRequest
             'password.uncompromised' => 'La contraseña es insegura por filtraciones previas.',
             'full_name.required' => 'El nombre completo es obligatorio.',
             'document.required' => 'El documento es obligatorio.',
-            'document.numeric' => 'El documento debe ser un número válido.',
-            'document.max_digits' => 'El documento no puede tener más de :max_digits dígitos.',
+            'document.max_digits' => 'El documento debe tener entre 5 y 12 dígitos.',
             'phone.required' => 'El teléfono es obligatorio.',
-            'phone.numeric' => 'El teléfono debe ser un número válido.',
-            'phone.max_digits' => 'El teléfono no puede tener más de :max_digits dígitos.',
+            'phone.digits' => 'El teléfono debe tener exactamente 10 dígitos.',
         ];
     }
 }
