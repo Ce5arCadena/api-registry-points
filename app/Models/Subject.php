@@ -12,8 +12,6 @@ class Subject extends Model
 
     protected $fillable = [
         "name",
-        "teacher_id",
-        "grade_id",
         "school_id",
         "status",
     ];
@@ -36,6 +34,6 @@ class Subject extends Model
 
     public function grades()
     {
-        return $this->belongsToMany(Grade::class, 'teacher_subjects');
+        return $this->belongsToMany(Grade::class, 'teacher_subjects', 'subject_id', 'grade_id')->distinct();
     }
 }
