@@ -35,8 +35,7 @@ class TeacherRepository {
     }
 
     public function getAllTeachers(int $schoolId) {
-        return Teacher::active()
-            ->where('school_id', $schoolId)
+        return Teacher::where('school_id', $schoolId)
             ->paginate(50)
             ->toResourceCollection();
     }
