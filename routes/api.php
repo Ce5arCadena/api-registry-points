@@ -49,6 +49,7 @@ Route::middleware(['auth:sanctum','abilities:school:teachers'])
         Route::get('{teacher}', 'show');
         Route::put('{teacher}', 'update');
         Route::delete('{teacher}', 'destroy');
+        Route::patch('/state', 'changeStates');
     });
 
 // Rutas de materias

@@ -39,4 +39,18 @@ class TeacherRepository {
             ->paginate(50)
             ->toResourceCollection();
     }
+
+    public function updateStates(array $ids, int $schoolId) {
+        $teachersById = Teacher::whereIn('id', $ids)->where('school_id', $schoolId)->get();
+        $teachersById->each(function ($teacher){
+            $teacher->update(['state' => $teacher->status === "INACTIVE" ? "ACTIVE" : "INACTIVE"]);
+        });
+
+        $teachers = $this->getAllTeachers($schoolId);
+
+        return [
+            "data" => $teachers,
+            "teachersById" => $teachersById
+        ];
+    }
 }

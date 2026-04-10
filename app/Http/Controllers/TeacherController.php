@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
+use App\Http\Requests\UpdateTeacherStatesRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -74,6 +75,23 @@ class TeacherController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al actualizar el maestro.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    /**
+     * Updates teacher statuses.
+     */
+    public function changeStates(UpdateTeacherStatesRequest $request): JsonResponse|ResourceCollection
+    {
+        try {
+            $validated = $request->validated();
+            $user = Auth::user();
+            return $this->teacherService->changeStates($validated, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar los estados de los maestros.',
                 'errors' => [$e->getMessage()]
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
