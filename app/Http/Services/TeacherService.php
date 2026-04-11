@@ -126,12 +126,12 @@ class TeacherService {
     }
 
     public function changeStates(array $ids, User $user) {
-        [$data, $teachersById] = $this->teacherRepository->updateStates($ids, $user->school_id);
-        $unprocessedTeachers = array_diff($ids, $teachersById->pluck('id')->toArray());
-        $message = count($unprocessedTeachers) > 0 ? "Algunos registros no pudieron ser procesados." : "Maestros actualizados";
+        [$data, $teachersById] = $this->teacherRepository->updateStates(array_values($ids["ids"]), $user->school_id);
+        $unprocessedTeachers = array_diff(array_values($ids["ids"]), $teachersById->pluck('id')->toArray());
+        $message = count($unprocessedTeachers) > 0 ? "Ids de registros que no existen => " . implode(",", $unprocessedTeachers) : "Maestros actualizados";
 
         return $data->additional([
-            $message,
+            "message" => $message
         ]);
     }
 

@@ -43,14 +43,14 @@ class TeacherRepository {
     public function updateStates(array $ids, int $schoolId) {
         $teachersById = Teacher::whereIn('id', $ids)->where('school_id', $schoolId)->get();
         $teachersById->each(function ($teacher){
-            $teacher->update(['state' => $teacher->status === "INACTIVE" ? "ACTIVE" : "INACTIVE"]);
+            $teacher->update(['status' => $teacher->status === "INACTIVE" ? "ACTIVE" : "INACTIVE"]);
         });
 
         $teachers = $this->getAllTeachers($schoolId);
 
         return [
-            "data" => $teachers,
-            "teachersById" => $teachersById
+            $teachers,
+            $teachersById
         ];
     }
 }
