@@ -2,6 +2,7 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Resources\GradeResource;
 use App\Repositories\GradeRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -9,8 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class GradeService {
     public function __construct(protected GradeRepository $gradeRepository) {}
 
-    public function getAll(User $user) {
-        $grades = $this->gradeRepository->getGrades($user->school_id);
+    public function getAll(User $user, Request $request) {
+        $grades = $request->boolean('all') ? $this->gradeRepository->getAllGrades($user->school_id) : $this->gradeRepository->getGrades($user->school_id);
 
         return $grades->additional([
             'message' => 'Lista de cursos.'

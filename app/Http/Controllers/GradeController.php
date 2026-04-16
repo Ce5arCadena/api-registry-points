@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Services\GradeService;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreGradeRequest;
@@ -15,11 +16,11 @@ class GradeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse|ResourceCollection
+    public function index(Request $request): JsonResponse|ResourceCollection
     {
         try {
             $user = Auth::user();
-            return $this->gradeService->getAll($user);
+            return $this->gradeService->getAll($user, $request);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al crear el curso.',

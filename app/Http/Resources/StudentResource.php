@@ -21,6 +21,7 @@ class StudentResource extends JsonResource
             "document" => $this->document,
             "phone" => $this->phone,
             "grade" => new GradeResource($this->grade),
+            "status" => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
