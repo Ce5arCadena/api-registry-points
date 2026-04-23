@@ -37,6 +37,7 @@ class GradeRepository {
     public function getAllGrades(int $schoolId) {
         return Grade::active()
             ->where("school_id", $schoolId)
-            ->get();
+            ->get()
+            ->toResourceCollection();
     }
 }

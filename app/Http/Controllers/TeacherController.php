@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
+use App\Http\Requests\UpdateStatesRequest;
 use App\Http\Requests\UpdateTeacherRequest;
-use App\Http\Requests\UpdateTeacherStatesRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -83,7 +83,7 @@ class TeacherController extends Controller
     /**
      * Updates teacher statuses.
      */
-    public function changeStates(UpdateTeacherStatesRequest $request): JsonResponse|ResourceCollection
+    public function changeStates(UpdateStatesRequest $request): JsonResponse|ResourceCollection
     {
         try {
             $validated = $request->validated();

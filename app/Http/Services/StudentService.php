@@ -7,7 +7,9 @@ use App\Repositories\GradeRepository;
 use App\Repositories\StudentRepository;
 use App\Http\Resources\StudentResource;
 use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStatesRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class StudentService {
@@ -44,10 +46,10 @@ class StudentService {
         ]);
     }
 
-    public function listStudents() {
+    public function listStudents(Request $request) {
         $authUser = Auth::user();
 
-        return $this->studentRepository->getAll($authUser->school_id)->additional([
+        return $this->studentRepository->getAll($authUser->school_id, $request->gradeId)->additional([
             'message' => 'Lista de estudiantes'
         ]);
     }
@@ -87,6 +89,24 @@ class StudentService {
         return response()->json([
             'message' => 'Estudiante eliminado.',
             'data' => new StudentResource($studentExists->fresh())
+        ]);
+    }
+
+    public function changeStates(UpdateStatesRequest $request) {
+        $user = Auth::user();
+        if (!$request->has("grade")) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud',
+                'errors' => ['El curso al que pertenecen los estudiantes es requerido.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        [$data, $studentsById] = $this->studentRepository->updateStates(array_values($request["ids"]), $request["grade"], $user->school_id);
+        $unprocessedStudents = array_diff(array_values($request["ids"]), $studentsById->pluck('id')->toArray());
+        $message = count($unprocessedStudents) > 0 ? "Ids de registros que no existen => " . implode(",", $unprocessedStudents) : "Estudiantes actualizados";
+
+        return $data->additional([
+            "message" => $message
         ]);
     }
 }

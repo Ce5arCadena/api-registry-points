@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Services\StudentService;
+use App\Http\Requests\UpdateStatesRequest;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class StudentController extends Controller
 {
@@ -14,10 +17,10 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            return $this->studentService->listStudents();
+            return $this->studentService->listStudents($request);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al listar los estudiantes.',
@@ -82,6 +85,22 @@ class StudentController extends Controller
             return response()->json([
                 'message' => 'Ocurrió un error al eliminar el estudiante.',
                 'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    /**
+     * Updates teacher statuses.
+     */
+    public function changeStates(UpdateStatesRequest $request): JsonResponse|ResourceCollection
+    {
+        try {
+            $validated = $request->validated();
+            return $this->studentService->changeStates($validated);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar los estados de los estudiantes.',
+                'errors' => [$e->getMessage(), $e->getLine(), $e->getFile()]
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }

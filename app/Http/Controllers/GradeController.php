@@ -23,7 +23,7 @@ class GradeController extends Controller
             return $this->gradeService->getAll($user, $request);
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'Ocurrió un error al crear el curso.',
+                'message' => 'Ocurrió un error al listar los cursos.',
                 'errors' => [$e->getMessage()]
             ]);
         }
