@@ -74,6 +74,7 @@ Route::middleware(['auth:sanctum','abilities:school:students'])
         Route::get('{student}', 'show');
         Route::put('{student}', 'update');
         Route::delete('{student}', 'destroy');
+        Route::patch('/state', 'changeStates');
     });
 
 // Rutas de categoría de puntos

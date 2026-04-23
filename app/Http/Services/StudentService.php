@@ -100,9 +100,11 @@ class StudentService {
                 'errors' => ['El curso al que pertenecen los estudiantes es requerido.'],
             ], JsonResponse::HTTP_NOT_FOUND);
         }
+        $validated = $request->validated();
 
-        [$data, $studentsById] = $this->studentRepository->updateStates(array_values($request["ids"]), $request["grade"], $user->school_id);
-        $unprocessedStudents = array_diff(array_values($request["ids"]), $studentsById->pluck('id')->toArray());
+
+        [$data, $studentsById] = $this->studentRepository->updateStates(array_values($validated["ids"]), $validated["grade"], $user->school_id);
+        $unprocessedStudents = array_diff(array_values($validated["ids"]), $studentsById->pluck('id')->toArray());
         $message = count($unprocessedStudents) > 0 ? "Ids de registros que no existen => " . implode(",", $unprocessedStudents) : "Estudiantes actualizados";
 
         return $data->additional([

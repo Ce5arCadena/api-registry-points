@@ -95,8 +95,7 @@ class StudentController extends Controller
     public function changeStates(UpdateStatesRequest $request): JsonResponse|ResourceCollection
     {
         try {
-            $validated = $request->validated();
-            return $this->studentService->changeStates($validated);
+            return $this->studentService->changeStates($request);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al actualizar los estados de los estudiantes.',

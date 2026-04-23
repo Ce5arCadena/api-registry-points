@@ -22,8 +22,7 @@ class StudentRepository {
     }
 
     public function getAll(int $schoolId, ?int $gradeId) {
-        return Student::active()
-            ->where('school_id', $schoolId)
+        return Student::where('school_id', $schoolId)
             ->when($gradeId, function($query) use ($gradeId) {
                 return $query->where('grade_id', $gradeId);
             })
