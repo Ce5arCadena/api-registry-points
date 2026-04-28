@@ -53,4 +53,15 @@ class TeacherRepository {
             $teachersById
         ];
     }
+
+    public function teacherSubjectsWithCourse(int $schoolId) {
+        return Teacher::whereHas('subjectAssignments', function($q) use ($schoolId) {
+            $q->where('school_id', $schoolId);
+        })->with(['subjectAssignments' => function($q) use ($schoolId) {
+            $q->active()
+                ->where('school_id', $schoolId)
+                ->with(['subject', 'grade']);
+        }])
+        ->paginate(50);
+    }
 }

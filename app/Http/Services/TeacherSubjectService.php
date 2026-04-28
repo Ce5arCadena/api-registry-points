@@ -10,6 +10,7 @@ use App\Repositories\TeacherSubjectRepository;
 use App\Http\Resources\TeacherSubjectResource;
 use App\Http\Requests\StoreTeacherSubjectRequest;
 use App\Http\Requests\UpdateTeacherSubjectRequest;
+use App\Http\Resources\TeacherSubjectCourseResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TeacherSubjectService {
@@ -91,9 +92,13 @@ class TeacherSubjectService {
 
     public function getAllTeachersSubjects() {
         $authUser = Auth::user();
-        $teachers = $this->teacherSubjectRepository->getAllTeachersSubjects($authUser->school_id);
+        $teachers = $this->teacherRepository->teacherSubjectsWithCourse($authUser->school_id);
 
-        return $teachers->additional([
+        // return $teachers->additional([
+        //     'message' => 'Lista de asignación de materias'
+        // ]);
+        return response()->json([
+            'data' => TeacherSubjectCourseResource::collection($teachers),
             'message' => 'Lista de asignación de materias'
         ]);
     }
