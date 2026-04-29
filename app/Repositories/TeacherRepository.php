@@ -61,7 +61,13 @@ class TeacherRepository {
             $q->active()
                 ->where('school_id', $schoolId)
                 ->with(['subject', 'grade']);
-        }])
-        ->paginate(50);
+        }])->get();
+    }
+
+    public function searchTeacher($field, $value, int $schoolId) {
+        return Teacher::active()
+            ->where('school_id', $schoolId)
+            ->whereLike($field, '%'.$value.'%', caseSensitive: true)
+            ->get();
     }
 }

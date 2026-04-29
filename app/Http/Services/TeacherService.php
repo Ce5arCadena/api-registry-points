@@ -2,8 +2,10 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use App\Http\Requests\SearchRequest;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\TeacherResource;
 use App\Repositories\TeacherRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -178,6 +180,17 @@ class TeacherService {
         
         return $teachers->additional([
             'message' => 'Lista de colegios.',
+        ]);
+    }
+
+    public function searchTeacher(SearchRequest $request) {
+        $user = Auth::user();
+        $validated = $request->validated();
+
+        $searchTeachers = $this->teacherRepository->searchTeacher($validated['field'], $validated['value'], $user->school_id);
+        return response()->json([
+            'message' => 'Búsqueda de maestros.',
+            'data' => $searchTeachers
         ]);
     }
 }

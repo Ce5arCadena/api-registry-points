@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+// use App\Http\Requests\SearchRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
@@ -25,6 +26,17 @@ class TeacherController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al listar los maestros.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    public function searchTeacher() {
+        try {
+            // return $this->teacherService->searchTeacher($request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar el maestro.',
                 'errors' => [$e->getMessage()]
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
