@@ -64,10 +64,10 @@ class TeacherRepository {
         }])->get();
     }
 
-    public function searchTeacher($field, $value, int $schoolId) {
+    public function searchTeacher(string $field, string $value, int $schoolId) {
         return Teacher::active()
             ->where('school_id', $schoolId)
-            ->whereLike($field, '%'.$value.'%', caseSensitive: true)
+            ->whereLike($field, '%'.$value.'%')
             ->get();
     }
 }

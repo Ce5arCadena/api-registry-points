@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-// use App\Http\Requests\SearchRequest;
+use App\Http\Requests\SearchRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
 use App\Http\Requests\StoreTeacherRequest;
@@ -31,9 +31,9 @@ class TeacherController extends Controller
         }
     }
 
-    public function searchTeacher() {
+    public function searchTeacher(SearchRequest $request) {
         try {
-            // return $this->teacherService->searchTeacher($request);
+            return $this->teacherService->searchTeacher($request);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al buscar el maestro.',

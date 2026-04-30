@@ -46,11 +46,11 @@ Route::middleware(['auth:sanctum','abilities:school:teachers'])
     ->group(function() {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::get('/search', 'searchTeacher');
         Route::get('{teacher}', 'show');
         Route::put('{teacher}', 'update');
         Route::delete('{teacher}', 'destroy');
         Route::patch('/state', 'changeStates');
-        Route::get('/search', 'searchTeacher');
     });
 
 // Rutas de materias
