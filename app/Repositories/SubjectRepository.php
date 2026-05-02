@@ -29,4 +29,11 @@ class SubjectRepository {
     public function create(array $data): Subject {
         return Subject::create($data);
     }
+
+    public function searchSubject(string $field, string $value, int $schoolId) {
+        return Subject::active()
+            ->where('school_id', $schoolId)
+            ->whereLike($field, '%'.$value.'%')
+            ->get();
+    }
 }

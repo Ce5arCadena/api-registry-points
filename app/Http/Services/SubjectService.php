@@ -97,4 +97,12 @@ class SubjectService {
             'data' => new SubjectResource($subject->fresh())
         ], JsonResponse::HTTP_OK);
     }
+
+    public function searchSubject(array $validated, User $user) {
+        $searchSubjects = $this->subjectRepository->searchSubject($validated['field'], $validated['value'], $user->school_id);
+        return response()->json([
+            'message' => 'Búsqueda de asignaturas.',
+            'data' => $searchSubjects
+        ]);
+    }
 }
