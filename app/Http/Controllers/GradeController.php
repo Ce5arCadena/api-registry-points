@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Services\GradeService;
+use App\Http\Requests\SearchRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreGradeRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,6 +27,20 @@ class GradeController extends Controller
                 'message' => 'Ocurrió un error al listar los cursos.',
                 'errors' => [$e->getMessage()]
             ]);
+        }
+    }
+
+    public function searchCourse(SearchRequest $request) {
+        try {
+            $user = Auth::user();
+            $validated = $request->validated();
+
+            return $this->gradeService->searchCourse($validated, $user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al buscar los cursos.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 

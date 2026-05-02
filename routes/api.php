@@ -34,6 +34,7 @@ Route::middleware(['auth:sanctum','abilities:school:courses'])
     ->group(function() {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::get('/search', 'searchCourse');
         Route::get('{grade}', 'show');
         Route::put('{grade}', 'update');
         Route::delete('{grade}', 'destroy');

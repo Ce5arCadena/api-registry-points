@@ -98,4 +98,12 @@ class GradeService {
             'data' => new GradeResource($gradeExist->fresh())
         ]);
     }
+
+    public function searchCourse(array $validated, User $user) {
+        $searchCourses = $this->gradeRepository->searchCourse($validated['field'], $validated['value'], $user->school_id);
+        return response()->json([
+            'message' => 'Búsqueda de cursos.',
+            'data' => $searchCourses
+        ]);
+    }
 }

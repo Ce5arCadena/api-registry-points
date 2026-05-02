@@ -40,4 +40,11 @@ class GradeRepository {
             ->get()
             ->toResourceCollection();
     }
+
+    public function searchCourse(string $field, string $value, int $schoolId) {
+        return Grade::active()
+            ->where('school_id', $schoolId)
+            ->whereLike($field, '%'.$value.'%')
+            ->get();
+    }
 }
