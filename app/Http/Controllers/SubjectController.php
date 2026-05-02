@@ -30,7 +30,7 @@ class SubjectController extends Controller
         }
     }
 
-    public function searchCourse(SearchRequest $request) {
+    public function searchSubject(SearchRequest $request) {
         try {
             $user = Auth::user();
             $validated = $request->validated();
