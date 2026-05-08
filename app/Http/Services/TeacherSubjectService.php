@@ -10,8 +10,8 @@ use App\Repositories\TeacherSubjectRepository;
 use App\Http\Resources\TeacherSubjectResource;
 use App\Http\Requests\StoreTeacherSubjectRequest;
 use App\Http\Requests\UpdateTeacherSubjectRequest;
-use App\Http\Resources\TeacherSubjectCourseResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Http\Resources\TeacherSubjectCourseResource;
 
 class TeacherSubjectService {
 
@@ -24,7 +24,7 @@ class TeacherSubjectService {
         $authUser = Auth::user();
         $fields = $requests->validated();
 
-        $teacherSubject = $this->teacherSubjectRepository->asignSubjectToTeacher([
+        $this->teacherSubjectRepository->asignSubjectToTeacher([
             ...$fields,
             "teacher_id" => $fields["teacher"],
             "subject_id" => $fields["subject"],
@@ -32,10 +32,7 @@ class TeacherSubjectService {
             "school_id" => $authUser->school_id
         ]);
 
-        return response()->json([
-            'message' => 'Materia asignada.',
-            'data' => new TeacherSubjectResource($teacherSubject)
-        ]);
+        return $this->getAllTeachersSubjects();
     }
 
     public function updateAsignSubjectToTeacher(UpdateTeacherSubjectRequest $request, int $teacherSubjectId): JsonResponse {
@@ -94,9 +91,6 @@ class TeacherSubjectService {
         $authUser = Auth::user();
         $teachers = $this->teacherRepository->teacherSubjectsWithCourse($authUser->school_id);
 
-        // return $teachers->additional([
-        //     'message' => 'Lista de asignación de materias'
-        // ]);
         return response()->json([
             'data' => TeacherSubjectCourseResource::collection($teachers),
             'message' => 'Lista de asignación de materias'
