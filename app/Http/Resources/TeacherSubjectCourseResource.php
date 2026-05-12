@@ -25,6 +25,8 @@ class TeacherSubjectCourseResource extends JsonResource
                     'subjects' => $items->map(fn($ts) => [
                         'id'   => $ts->subject?->id,
                         'name' => $ts->subject?->name,
+                        'assignment_id' => $ts->id,
+                        'year' => $ts->academic_year
                     ])->unique('id')->values()
                 ])->values()
         ];
