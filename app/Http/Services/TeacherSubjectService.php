@@ -32,7 +32,7 @@ class TeacherSubjectService {
             "school_id" => $authUser->school_id
         ]);
 
-        return $this->getAllTeachersSubjects();
+        return $this->getAllTeachersSubjects('Asignación creada');
     }
 
     public function updateAsignSubjectToTeacher(UpdateTeacherSubjectRequest $request, int $teacherSubjectId): JsonResponse {
@@ -81,19 +81,16 @@ class TeacherSubjectService {
         if (isset($fields['academic_year'])) $fieldsUpdate['academic_year'] = $fields['academic_year'];
         $this->teacherSubjectRepository->updateTeacherSubject($teacherSubject->id, $authUser->school_id, $fieldsUpdate);
 
-        return response()->json([
-            'message' => 'Asignación de materia actualizada.',
-            'data' => new TeacherSubjectResource($teacherSubject->fresh())
-        ]);
+        return $this->getAllTeachersSubjects('Asignación actualizada');
     }
 
-    public function getAllTeachersSubjects() {
+    public function getAllTeachersSubjects(string $message = 'Lista de asignación de materias') {
         $authUser = Auth::user();
         $teachers = $this->teacherRepository->teacherSubjectsWithCourse($authUser->school_id);
 
         return response()->json([
             'data' => TeacherSubjectCourseResource::collection($teachers),
-            'message' => 'Lista de asignación de materias'
+            'message' => $message
         ]);
     }
 
