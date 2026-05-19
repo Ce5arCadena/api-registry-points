@@ -52,6 +52,7 @@ class TeacherService {
             'full_name' => $fields["full_name"],
             'document' => $fields["document"],
             'phone' => $fields["phone"],
+            'status' => 'ACTIVE',
             'school_id' => $user->school_id,
             'user_id' => $userTeacher->id
         ]);

@@ -30,6 +30,12 @@ class StudentRepository {
             ->toResourceCollection();
     }
 
+    public function getAllStudentsActive(int $schoolId) {
+        return Student::active()
+            ->where('school_id', $schoolId)
+            ->get();
+    }
+
     public function updateStudent(int $id, int $schoolId, array $data) {
         return $this->getStudentById($id, $schoolId)->update($data);
     }

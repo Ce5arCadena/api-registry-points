@@ -126,10 +126,7 @@ class TeacherSubjectService {
             'status' => 'INACTIVE'
         ]);
 
-        return response()->json([
-            'message' => 'Asignación de materia eliminada.',
-            'data' => new TeacherSubjectResource($teacherSubject->fresh())
-        ]);
+        return $this->getAllTeachersSubjects('Asignación eliminada');
     }
 
     public function getGradesByTeacher(): JsonResponse {

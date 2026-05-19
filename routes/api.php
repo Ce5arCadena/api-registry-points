@@ -22,11 +22,20 @@ Route::middleware(['auth:sanctum', 'abilities:admin:schools'])
     ->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::get('/info/dashboard', 'getInfoSchool');
         Route::get('{school}', 'show');
         Route::patch('{school}', 'update');
         Route::delete('{school}', 'destroy');
     });
     
+// Ruta de consulta dashboard
+Route::middleware(['auth:sanctum','abilities:school:info'])
+    ->prefix('info')
+    ->controller(SchoolController::class)
+    ->group(function() {
+        Route::get('/', 'getInfoSchool');
+    });
+
 // Rutas de grados
 Route::middleware(['auth:sanctum','abilities:school:courses'])
     ->prefix('courses')

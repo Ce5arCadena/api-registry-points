@@ -40,6 +40,12 @@ class TeacherRepository {
             ->toResourceCollection();
     }
 
+    public function getAllTeachersActive(int $schoolId) {
+        return Teacher::active()
+            ->where('school_id', $schoolId)
+            ->get();
+    }
+
     public function updateStates(array $ids, int $schoolId) {
         $teachersById = Teacher::whereIn('id', $ids)->where('school_id', $schoolId)->get();
         $teachersById->each(function ($teacher){

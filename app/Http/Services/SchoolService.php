@@ -3,14 +3,23 @@ namespace App\Http\Services;
 
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\GradeRepository;
 use App\Http\Resources\SchoolResource;
 use App\Repositories\SchoolRepository;
+use App\Repositories\StudentRepository;
+use App\Repositories\SubjectRepository;
+use App\Repositories\TeacherRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SchoolService {
     public function __construct(
         protected UserRepository $userRepository,
-        protected SchoolRepository $schoolRepository
+        protected GradeRepository $courseRepository,
+        protected SchoolRepository $schoolRepository,
+        protected SubjectRepository $subjectRepository,
+        protected TeacherRepository $teacherRepository,
+        protected StudentRepository $studentRepository,
     ) {}
 
     public function saveSchool(array $fields): JsonResponse {
@@ -109,7 +118,7 @@ class SchoolService {
         ]);
     }
 
-    public function showSchool($school) {
+    public function showSchool(int $school): JsonResponse {
         $schoolById = $this->schoolRepository->findById($school);
         if (!$schoolById) {
             return response()->json([
@@ -151,6 +160,24 @@ class SchoolService {
         
         return $schools->additional([
             'message' => 'Lista de colegios.'
+        ]);
+    }
+
+    public function getInfoSchool(): JsonResponse {
+        $userAuth = Auth::user();
+        $totalCourses = $this->courseRepository->getAllGrades($userAuth->school_id)->count();
+        $totalSubjects = $this->subjectRepository->getSubjectsActive($userAuth->school_id)->count();
+        $totalTeachers = $this->teacherRepository->getAllTeachersActive($userAuth->school_id)->count();
+        $totalStudents = $this->studentRepository->getAllStudentsActive($userAuth->school_id)->count();
+        
+        return response()->json([
+            'message' => 'Información del dashboard.',
+            'data' => [
+                'total_courses' => $totalCourses,
+                'total_subjects' => $totalSubjects,
+                'total_teachers' => $totalTeachers,
+                'total_students' => $totalStudents
+            ]
         ]);
     }
 }

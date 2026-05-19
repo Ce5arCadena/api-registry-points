@@ -27,6 +27,18 @@ class SchoolController extends Controller
         }
     }
 
+    public function getInfoSchool(): JsonResponse
+    {
+        try {
+            return $this->schoolService->getInfoSchool();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar la información del dashboard.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -45,7 +57,7 @@ class SchoolController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($school): JsonResponse
+    public function show(int $school): JsonResponse
     {
         try {
             return $this->schoolService->showSchool($school);

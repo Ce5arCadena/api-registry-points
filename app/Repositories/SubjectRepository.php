@@ -6,8 +6,13 @@ use App\Models\Subject;
 
 class SubjectRepository {
     public function getSubjects(int $schoolId) {
-        return Subject::where('status', 'ACTIVE')->where('school_id', $schoolId)->paginate(50)->toResourceCollection();
+        return Subject::active()->where('school_id', $schoolId)->paginate(50)->toResourceCollection();
     }
+
+    public function getSubjectsActive(int $schoolId) {
+        return Subject::active()->where('school_id', $schoolId)->get();
+    }
+
     public function getById(int $id, int $schoolId) {
         return Subject::where('status', 'ACTIVE')
             ->where('id', trim($id))
