@@ -14,7 +14,6 @@ class PointCategory extends Model
         "name",
         "max_points",
         "teacher_id",
-        "subject_id",
         "school_id",
         "status"
     ];

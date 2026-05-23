@@ -23,18 +23,10 @@ class PointCategoryService {
         $data = $request->validated();
 
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
-        $subjectAssign = $this->teacherSubjectRepository->getBySubjectAndteacher($teacher->id, $data['subject'], $authUser->school_id);
-        if (!$subjectAssign) {
-            return response()->json([
-                'message' => 'Error al procesar la solicitud.',
-                'errors' => ['No puedes crear esta categoría de puntos para esta asignatura.'],
-            ], JsonResponse::HTTP_CONFLICT);
-        }
 
         $pointCategory = $this->pointCategoryRepository->getPointCategoryByName([
             "name" => $data["name"],
             "teacher_id" => $teacher->id,
-            "subject_id" => $subjectAssign->subject_id,
             "school_id" => $authUser->school_id
         ]);
         if ($pointCategory) {
@@ -47,7 +39,6 @@ class PointCategoryService {
         $pointCategory = $this->pointCategoryRepository->createPointCategory([
             ...$data,
             "teacher_id" => $teacher->id,
-            "subject_id" => $data["subject"],
             "school_id" => $authUser->school_id
         ]);
 
@@ -75,24 +66,10 @@ class PointCategoryService {
         }
 
         $fields = [];
-        if (isset($data['subject'])) {
-            // Válido que pueda el maestro asignar esa materia a la categoria de puntos que trata de editar
-            $subjectAssign = $this->teacherSubjectRepository->getBySubjectAndteacher($teacher->id, $data['subject'], $authUser->school_id);
-            if (!$subjectAssign) {
-                return response()->json([
-                    'message' => 'Error al procesar la solicitud.',
-                    'errors' => ['No puedes asignar esta materia porque no estás autorizado.'],
-                ], JsonResponse::HTTP_NOT_FOUND);
-            }
-            $fields["subject_id"] = $data["subject"];  
-        }
-
-        $valueSubject = $data["subject"] ?? $pointCategory->subject_id;
         if (isset($data["name"])) {
             $pointCategoryByName = $this->pointCategoryRepository->getPointCategoryByName([
                 "name" => $data["name"],
                 "teacher_id" => $teacher->id,
-                "subject_id" => $valueSubject,
                 "school_id" => $authUser->school_id
             ]);
             if ($pointCategoryByName && $pointCategoryByName->id !== $pointCategory->id) {
@@ -101,8 +78,7 @@ class PointCategoryService {
                     'errors' => ['Ya tienes una categoria con el mismo nombre.'],
                 ], JsonResponse::HTTP_CONFLICT);
             }
-            $fields["name"] = $data["name"];
-            if (isset($data["subject"])) $fields["subject_id"] = $data["subject"];    
+            $fields["name"] = $data["name"]; 
         }
 
         if (isset($data["max_points"])) $fields["max_pointse"] = $data["max_points"];

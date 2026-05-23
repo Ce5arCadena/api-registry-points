@@ -19,7 +19,6 @@ class PointCategoryResource extends JsonResource
             "name"=> $this->name,
             "max_points" => $this->max_points,
             "teacher" => $this->teacher,
-            "subject" => new SubjectResource($this->subject),
             "status" => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
