@@ -4,10 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\TeacherRepository;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePointCategoryContextRequest extends FormRequest
 {
+    public function __construct(
+        protected TeacherRepository $teacherRepository,
+    ) {}
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,13 +28,15 @@ class StorePointCategoryContextRequest extends FormRequest
     public function rules(): array
     {
         $auth = Auth::user();
+        $teacherSearch = $this->teacherRepository->getTeacherByUserId($auth->id, $auth->school_id);
+
         return [
             "pointCategoryId" => [
                 "required",
                 "integer",
                 "min:1",
                 Rule::exists("point_categories", "id")
-                    ->where('teacher_id', $auth->id)
+                    ->where('teacher_id', $teacherSearch->id)
                     ->where('status', 'ACTIVE')
                     ->where("school_id", $auth->school_id),
             ],
@@ -39,7 +45,7 @@ class StorePointCategoryContextRequest extends FormRequest
                 "integer",
                 "min:1",
                 Rule::exists("teacher_subject", "grade_id")
-                    ->where('teacher_id', $auth->id)
+                    ->where('teacher_id', $teacherSearch->id)
                     ->where('status', 'ACTIVE')
                     ->where("school_id", $auth->school_id),
             ],
@@ -48,7 +54,7 @@ class StorePointCategoryContextRequest extends FormRequest
                 "integer",
                 "min:1",
                 Rule::exists("teacher_subject", "subject_id")
-                    ->where('teacher_id', $auth->id)
+                    ->where('teacher_id', $teacherSearch->id)
                     ->where('grade_id', $this->course)
                     ->where('status', 'ACTIVE')
                     ->where("school_id", $auth->school_id),

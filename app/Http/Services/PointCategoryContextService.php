@@ -4,17 +4,15 @@ namespace App\Http\Services;
 
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\TeacherRepository;
-use App\Repositories\PointCategoryRepository;
-use App\Http\Resources\PointCategoryResource;
 use App\Repositories\TeacherSubjectRepository;
-use App\Http\Requests\UpdatePointCategoryRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repositories\PointCategoryContextRepository;
 use App\Http\Requests\StorePointCategoryContextRequest;
 
 class PointCategoryContextService {
     public function __construct(
         protected TeacherRepository $teacherRepository,
-        protected PointCategoryRepository $pointCategoryRepository,
+        protected PointCategoryContextRepository $pointCategoryContextRepository,
         protected TeacherSubjectRepository $teacherSubjectRepository
     ) {}
 
@@ -23,28 +21,37 @@ class PointCategoryContextService {
         $data = $request->validated();
 
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
-
-        $pointCategory = $this->pointCategoryRepository->getPointCategoryByName([
-            "name" => $data["name"],
-            "teacher_id" => $teacher->id,
-            "school_id" => $authUser->school_id
-        ]);
-        if ($pointCategory) {
+        if (!$teacher) {
             return response()->json([
                 'message' => 'Error al procesar la solicitud.',
-                'errors' => ['Ya tienes una categoria con el mismo nombre.'],
+                'errors' => ['No estás autorizado para ejecutar esta acción.'],
+            ], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $pointCategoryContext = $this->pointCategoryContextRepository->existCategoryContext([
+            "point_category_id" => $data["pointCategoryId"],
+            "grade_id" => $data["course"],
+            "subject_id" => $data["subject"],
+            "school_id" => $authUser->school_id
+        ]);
+        if ($pointCategoryContext) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['Ya tienes una categoría asignada con el mismo curso y misma asignatura.'],
             ], JsonResponse::HTTP_CONFLICT);
         }
 
-        $pointCategory = $this->pointCategoryRepository->createPointCategory([
-            ...$data,
-            "teacher_id" => $teacher->id,
+        $pointCategoryContext = $this->pointCategoryContextRepository->createPointCategoryContext([
+            "point_category_id" => $data["pointCategoryId"],
+            "grade_id" => $data["course"],
+            "subject_id" => $data["subject"],
+            "status" => 'ACTIVE',
             "school_id" => $authUser->school_id
         ]);
 
         return response()->json([
-            'message' => 'Categoria de puntos creada.',
-            'data' => new PointCategoryResource($pointCategory)
+            'message' => 'Categoria de puntos asignada.',
+            'data' => $pointCategoryContext
         ]);
     }
 }

@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('point_category_contexts', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('point_category_context', function (Blueprint $table) {
+            $table->foreignId('school_id')->after('status')->constrained('schools')->onDelete('restrict');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('point_category_contexts');
+        Schema::table('point_category_context', function (Blueprint $table) {
+            $table->dropColumn('school_id');
+        });
     }
 };

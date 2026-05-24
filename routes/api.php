@@ -104,7 +104,7 @@ Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
 
 // Rutas de asignación de categoría de puntos en asignaturas y cursos
 Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
-    ->prefix('point-categories')
+    ->prefix('point-category-contexts')
     ->controller(PointCategoryContextController::class)
     ->group(function() {
         Route::get('/', 'index');
