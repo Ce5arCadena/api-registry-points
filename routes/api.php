@@ -11,6 +11,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\PointCategoryController;
 use App\Http\Controllers\RegistryPointController;
 use App\Http\Controllers\TeacherSubjectController;
+use App\Http\Controllers\PointCategoryContextController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/auth/create-admin', [UserController::class, 'createSuperAdmin']);
@@ -93,6 +94,18 @@ Route::middleware(['auth:sanctum','abilities:school:students'])
 Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
     ->prefix('point-categories')
     ->controller(PointCategoryController::class)
+    ->group(function() {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{category}', 'show');
+        Route::put('{category}', 'update');
+        Route::delete('{category}', 'destroy');
+    });
+
+// Rutas de asignación de categoría de puntos en asignaturas y cursos
+Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
+    ->prefix('point-categories')
+    ->controller(PointCategoryContextController::class)
     ->group(function() {
         Route::get('/', 'index');
         Route::post('/', 'store');

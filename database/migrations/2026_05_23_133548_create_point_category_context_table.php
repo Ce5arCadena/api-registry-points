@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('point_category_context', function (Blueprint $table) {
             $table->id();
             $table->foreignId('point_category_id')->constrained('point_categories')->onDelete('restrict');
-            $table->foreignId('course_id')->constrained('courses')->onDelete('restrict');
+            $table->foreignId('grade_id')->constrained('grades')->onDelete('restrict');
             $table->foreignId('subject_id')->constrained('subjects')->onDelete('restrict');
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->timestamps();
