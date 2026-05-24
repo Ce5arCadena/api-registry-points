@@ -97,8 +97,12 @@ class PointCategoryService {
 
     public function getPointsCategories() {
         $authUser = Auth::user();
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
 
-        $pointCategories = $this->pointCategoryRepository->getPointsCategories($authUser->school_id);
+        $pointCategories = $this->pointCategoryRepository->getPointCategoriesByContext([
+            "teacher_id" => $teacher->id,
+            "school_id" => $authUser->school_id
+        ]);
 
         return $pointCategories->additional([
             "message" => "Lista de categorías de puntos."

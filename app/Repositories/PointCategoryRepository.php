@@ -12,6 +12,15 @@ class PointCategoryRepository {
             ->toResourceCollection();
     }
 
+    public function getPointCategoriesByContext(array $fields) {
+        return PointCategory::active()
+            ->with('pointCategoryContext.course', 'pointCategoryContext.subject')
+            ->where('teacher_id', $fields['teacher_id'])
+            ->where('school_id', $fields['school_id'])
+            ->paginate(50)
+            ->toResourceCollection();
+    }
+
     public function createPointCategory(array $fields) {
         return PointCategory::create($fields);
     }

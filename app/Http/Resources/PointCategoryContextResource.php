@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PointCategoryResource extends JsonResource
+class PointCategoryContextResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,11 +16,10 @@ class PointCategoryResource extends JsonResource
     {
         return [
             "id"=> $this->id,
-            "name"=> $this->name,
-            "max_points" => $this->max_points,
-            "teacher" => $this->teacher,
-            "context" => $this->pointCategoryContext,
-            "status" => $this->status,
+            "point_category_id"=> $this->point_category_id,
+            "grade" => $this->course,
+            "subject" => $this->subject,
+            "status" => $this->status,  
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

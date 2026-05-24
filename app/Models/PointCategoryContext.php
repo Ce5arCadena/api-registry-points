@@ -18,4 +18,16 @@ class PointCategoryContext extends Model
     public function scopeActive($query) {
         return $query->where("status", 'ACTIVE');
     }
+
+    public function pointCategory() {
+        return $this->belongsTo(PointCategory::class, "point_category_id");
+    }
+
+    public function subject() {
+        return $this->belongsTo(Subject::class, "subject_id");
+    }
+
+    public function course() {
+        return $this->belongsTo(Grade::class, "grade_id");
+    }
 }
