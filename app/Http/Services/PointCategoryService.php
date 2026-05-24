@@ -10,6 +10,7 @@ use App\Repositories\TeacherSubjectRepository;
 use App\Http\Requests\StorePointCategoryRequest;
 use App\Http\Requests\UpdatePointCategoryRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class PointCategoryService {
     public function __construct(
@@ -18,7 +19,7 @@ class PointCategoryService {
         protected TeacherSubjectRepository $teacherSubjectRepository
     ) {}
 
-    public function createPointCategory(StorePointCategoryRequest $request): JsonResponse {
+    public function createPointCategory(StorePointCategoryRequest $request): JsonResponse | ResourceCollection {
         $authUser = Auth::user();
         $data = $request->validated();
 
@@ -42,13 +43,10 @@ class PointCategoryService {
             "school_id" => $authUser->school_id
         ]);
 
-        return response()->json([
-            'message' => 'Categoria de puntos creada.',
-            'data' => new PointCategoryResource($pointCategory)
-        ]);
+        return $this->getPointsCategories("Categoria de puntos creada.");
     }
 
-    public function updatePointCategory(UpdatePointCategoryRequest $request, int $pointCategoryId) {
+    public function updatePointCategory(UpdatePointCategoryRequest $request, int $pointCategoryId): JsonResponse | ResourceCollection {
         $authUser = Auth::user();
         $data = $request->validated();
 
@@ -89,13 +87,10 @@ class PointCategoryService {
             "school_id" => $authUser->school_id
         ], $fields);
 
-        return response()->json([
-            'message' => 'Categoria de puntos actualizada.',
-            'data' => new PointCategoryResource($pointCategory->fresh()),
-        ]);
+        return $this->getPointsCategories("Categoria de puntos actualizada.");
     }
 
-    public function getPointsCategories() {
+    public function getPointsCategories(string $message = "Lista de categorías de puntos.") {
         $authUser = Auth::user();
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
 
@@ -105,7 +100,7 @@ class PointCategoryService {
         ]);
 
         return $pointCategories->additional([
-            "message" => "Lista de categorías de puntos."
+            "message" => $message
         ]);
     }
 
@@ -155,9 +150,6 @@ class PointCategoryService {
             "status" => "INACTIVE"
         ]);
 
-        return response()->json([
-            'message' => 'Categoria de puntos eliminada.',
-            'data' => new PointCategoryResource($pointCategory->fresh()),
-        ]);
+        return $this->getPointsCategories("Categoria de puntos eliminada.");
     }
 }
