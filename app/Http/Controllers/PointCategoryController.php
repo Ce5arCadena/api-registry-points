@@ -7,6 +7,7 @@ use App\Http\Services\PointCategoryService;
 use App\Http\Requests\StorePointCategoryRequest;
 use App\Http\Requests\UpdatePointCategoryRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class PointCategoryController extends Controller
 {
@@ -38,7 +39,7 @@ class PointCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePointCategoryRequest $request): JsonResponse
+    public function store(StorePointCategoryRequest $request): JsonResponse | ResourceCollection
     {
         try {
             return $this->pointCategoryService->createPointCategory($request);

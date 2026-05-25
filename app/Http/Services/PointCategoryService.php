@@ -79,7 +79,7 @@ class PointCategoryService {
             $fields["name"] = $data["name"]; 
         }
 
-        if (isset($data["max_points"])) $fields["max_pointse"] = $data["max_points"];
+        if (isset($data["max_points"])) $fields["max_points"] = $data["max_points"];
         
         $this->pointCategoryRepository->updateCategoryPoint([
             "id" => $pointCategoryId,
