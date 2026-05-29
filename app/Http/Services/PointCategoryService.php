@@ -126,7 +126,7 @@ class PointCategoryService {
         ]);
     }
 
-    public function deletePointCategory(int $pointCategoryId): JsonResponse {
+    public function deletePointCategory(int $pointCategoryId): JsonResponse | ResourceCollection {
         $authUser = Auth::user();
 
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
@@ -151,5 +151,14 @@ class PointCategoryService {
         ]);
 
         return $this->getPointsCategories("Categoria de puntos eliminada.");
+    }
+
+    public function changeStates(array $ids): JsonResponse | ResourceCollection {
+        $user = Auth::user();
+        [$pointCategoriesById] = $this->pointCategoryRepository->updateStates(array_values($ids["ids"]), $user->school_id);
+        $unprocessedPointCategories = array_diff(array_values($ids["ids"]), $pointCategoriesById->pluck('id')->toArray());
+        $message = count($unprocessedPointCategories) > 0 ? "Ids de registros que no existen => " . implode(",", $unprocessedPointCategories) : "Categorías de puntos actualizadas";
+
+        return $this->getPointsCategories($message);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\PointCategory;
 use App\Http\Services\PointCategoryService;
 use App\Http\Requests\StorePointCategoryRequest;
 use App\Http\Requests\UpdatePointCategoryRequest;
+use App\Http\Requests\UpdateStatesRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -101,6 +102,22 @@ class PointCategoryController extends Controller
                 'message' => 'Ocurrió un error al eliminar la categoría de puntos.',
                 'errors' => [$e->getMessage()]
             ]);
+        }
+    }
+
+    /**
+     * Updates point category statuses.
+     */
+    public function changeStates(UpdateStatesRequest $request): JsonResponse|ResourceCollection
+    {
+        try {
+            $validated = $request->validated();
+            return $this->pointCategoryService->changeStates($validated);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar los estados de las categorías de puntos.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }

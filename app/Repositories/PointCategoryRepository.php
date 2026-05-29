@@ -8,16 +8,15 @@ class PointCategoryRepository {
     public function getPointsCategories(int $schoolId) {
         return PointCategory::active()
             ->where("school_id", $schoolId)
-            ->paginate(50)
+            ->paginate(150)
             ->toResourceCollection();
     }
 
     public function getPointCategoriesByContext(array $fields) {
-        return PointCategory::active()
-            ->with('pointCategoryContext.course', 'pointCategoryContext.subject')
+        return PointCategory::with('pointCategoryContext.course', 'pointCategoryContext.subject')
             ->where('teacher_id', $fields['teacher_id'])
             ->where('school_id', $fields['school_id'])
-            ->paginate(50)
+            ->paginate(150)
             ->toResourceCollection();
     }
 
@@ -56,5 +55,16 @@ class PointCategoryRepository {
             ->where('teacher_id', $fieldsConditions['teacher_id'])
             ->where('school_id', $fieldsConditions['school_id'])
             ->update($newData);
+    }
+
+    public function updateStates(array $ids, int $schoolId) {
+        $pointCategoriesId = PointCategory::whereIn('id', $ids)->where('school_id', $schoolId)->get();
+        $pointCategoriesId->each(function ($teacher){
+            $teacher->update(['status' => $teacher->status === "INACTIVE" ? "ACTIVE" : "INACTIVE"]);
+        });
+
+        return [
+            $pointCategoriesId
+        ];
     }
 }

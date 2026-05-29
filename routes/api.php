@@ -100,6 +100,7 @@ Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
         Route::get('{category}', 'show');
         Route::put('{category}', 'update');
         Route::delete('{category}', 'destroy');
+        Route::patch('/state', 'changeStates');
     });
 
 // Rutas de asignación de categoría de puntos en asignaturas y cursos
