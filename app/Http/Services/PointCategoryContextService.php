@@ -110,6 +110,14 @@ class PointCategoryContextService {
         }
 
         return $this->getPointsCategories('Asignación de categoría de puntos actualizada.');
+    }
 
+    public function changeStates(array $ids): JsonResponse | ResourceCollection {
+        $user = Auth::user();
+        [$pointCategoriesById] = $this->pointCategoryContextRepository->updateStates(array_values($ids["ids"]), $user->school_id);
+        $unprocessedPointCategories = array_diff(array_values($ids["ids"]), $pointCategoriesById->pluck('id')->toArray());
+        $message = count($unprocessedPointCategories) > 0 ? "Ids de registros que no existen => " . implode(",", $unprocessedPointCategories) : "Asignaciones de categorías de puntos actualizadas";
+
+        return $this->getPointsCategories($message);
     }
 }

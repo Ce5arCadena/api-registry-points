@@ -33,4 +33,15 @@ class PointCategoryContextRepository {
     public function updatePointCategoryContext(int $id, int $school_id, array $fields) {
         return PointCategoryContext::where('id', $id)->where('school_id', $school_id)->update($fields);
     }
+
+    public function updateStates(array $ids, int $schoolId) {
+        $pointCategoriesId = PointCategoryContext::whereIn('id', $ids)->where('school_id', $schoolId)->get();
+        $pointCategoriesId->each(function ($pointCategoryContext) {
+            $pointCategoryContext->update(['status' => $pointCategoryContext->status === "INACTIVE" ? "ACTIVE" : "INACTIVE"]);
+        });
+
+        return [
+            $pointCategoriesId
+        ];
+    }
 }

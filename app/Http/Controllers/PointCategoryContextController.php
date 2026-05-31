@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\PointCategoryContext;
+use App\Http\Requests\UpdateStatesRequest;
 use App\Http\Services\PointCategoryContextService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Http\Requests\StorePointCategoryContextRequest;
 use App\Http\Requests\UpdatePointCategoryContextRequest;
 
@@ -26,7 +27,7 @@ class PointCategoryContextController extends Controller
             return response()->json([
                 'message' => 'Ocurrió un error al listar las asignaciones de categorías de puntos.',
                 'errors' => [$e->getMessage()]
-            ]);
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -41,7 +42,7 @@ class PointCategoryContextController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePointCategoryContextRequest $request): JsonResponse
+    public function store(StorePointCategoryContextRequest $request): JsonResponse | ResourceCollection
     {
         try {
             return $this->pointCategoryContextService->savePointCategoryContext($request);
@@ -72,7 +73,7 @@ class PointCategoryContextController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePointCategoryContextRequest $request, int $pointCategoryContext)
+    public function update(UpdatePointCategoryContextRequest $request, int $pointCategoryContext) : JsonResponse | ResourceCollection
     {
         try {
             return $this->pointCategoryContextService->updatePointCategoryContext($request, $pointCategoryContext);
@@ -90,5 +91,21 @@ class PointCategoryContextController extends Controller
     public function destroy(PointCategoryContext $pointCategoryContext)
     {
         //
+    }
+
+    /**
+     * Updates point category context statuses.
+     */
+    public function changeStates(UpdateStatesRequest $request): JsonResponse | ResourceCollection
+    {
+        try {
+            $validated = $request->validated();
+            return $this->pointCategoryContextService->changeStates($validated);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar los estados de las categorías de puntos.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }
