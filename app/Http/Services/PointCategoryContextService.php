@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\TeacherRepository;
+use App\Repositories\PointCategoryRepository;
 use App\Repositories\TeacherSubjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Repositories\PointCategoryContextRepository;
@@ -12,8 +13,9 @@ use App\Http\Requests\StorePointCategoryContextRequest;
 class PointCategoryContextService {
     public function __construct(
         protected TeacherRepository $teacherRepository,
+        protected PointCategoryRepository $pointCategoryRepository,
+        protected TeacherSubjectRepository $teacherSubjectRepository,
         protected PointCategoryContextRepository $pointCategoryContextRepository,
-        protected TeacherSubjectRepository $teacherSubjectRepository
     ) {}
 
     public function savePointCategoryContext(StorePointCategoryContextRequest $request): JsonResponse {
@@ -52,6 +54,20 @@ class PointCategoryContextService {
         return response()->json([
             'message' => 'Categoria de puntos asignada.',
             'data' => $pointCategoryContext
+        ]);
+    }
+
+    public function getPointsCategories(string $message = "Lista de asignaciones de categorías.") {
+        $authUser = Auth::user();
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
+
+        $pointCategories = $this->pointCategoryRepository->getPointCategoriesByContext([
+            "teacher_id" => $teacher->id,
+            "school_id" => $authUser->school_id
+        ]);
+
+        return $pointCategories->additional([
+            "message" => $message
         ]);
     }
 }

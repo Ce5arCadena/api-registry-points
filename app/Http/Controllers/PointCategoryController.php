@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\PointCategory;
+use App\Http\Requests\UpdateStatesRequest;
 use App\Http\Services\PointCategoryService;
 use App\Http\Requests\StorePointCategoryRequest;
 use App\Http\Requests\UpdatePointCategoryRequest;
-use App\Http\Requests\UpdateStatesRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 

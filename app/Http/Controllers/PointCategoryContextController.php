@@ -19,7 +19,14 @@ class PointCategoryContextController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            return $this->pointCategoryContextService->getPointsCategories();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar las asignaciones de categorías de puntos.',
+                'errors' => [$e->getMessage()]
+            ]);
+        }
     }
 
     /**
