@@ -7,6 +7,7 @@ use App\Models\PointCategoryContext;
 use App\Http\Services\PointCategoryContextService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Requests\StorePointCategoryContextRequest;
+use App\Http\Requests\UpdatePointCategoryContextRequest;
 
 class PointCategoryContextController extends Controller
 {
@@ -71,9 +72,16 @@ class PointCategoryContextController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, PointCategoryContext $pointCategoryContext)
+    public function update(UpdatePointCategoryContextRequest $request, int $pointCategoryContext)
     {
-        //
+        try {
+            return $this->pointCategoryContextService->updatePointCategoryContext($request, $pointCategoryContext);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar la asignación de categoría de puntos.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

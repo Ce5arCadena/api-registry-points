@@ -8,7 +8,9 @@ use App\Repositories\PointCategoryRepository;
 use App\Repositories\TeacherSubjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Repositories\PointCategoryContextRepository;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Http\Requests\StorePointCategoryContextRequest;
+use App\Http\Requests\UpdatePointCategoryContextRequest;
 
 class PointCategoryContextService {
     public function __construct(
@@ -18,7 +20,7 @@ class PointCategoryContextService {
         protected PointCategoryContextRepository $pointCategoryContextRepository,
     ) {}
 
-    public function savePointCategoryContext(StorePointCategoryContextRequest $request): JsonResponse {
+    public function savePointCategoryContext(StorePointCategoryContextRequest $request): JsonResponse | ResourceCollection {
         $authUser = Auth::user();
         $data = $request->validated();
 
@@ -51,10 +53,7 @@ class PointCategoryContextService {
             "school_id" => $authUser->school_id
         ]);
 
-        return response()->json([
-            'message' => 'Categoria de puntos asignada.',
-            'data' => $pointCategoryContext
-        ]);
+        return $this->getPointsCategories('Categoría de puntos asignada.');
     }
 
     public function getPointsCategories(string $message = "Lista de asignaciones de categorías.") {
@@ -69,5 +68,48 @@ class PointCategoryContextService {
         return $pointCategories->additional([
             "message" => $message
         ]);
+    }
+
+    public function updatePointCategoryContext(UpdatePointCategoryContextRequest $request, int $pointCategoryContextId): JsonResponse | ResourceCollection {
+        $fieldsUpdated = [];
+        $authUser = Auth::user();
+        $data = $request->validated();
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
+
+        // Verificar que la asignación de categoría de puntos exista y pertenezca al maestro autenticado
+        $pointCategoryContext = $this->pointCategoryContextRepository->getPointCategoryContextById([
+            "id" => $pointCategoryContextId,
+            "teacher_id" => $teacher->id,
+            "school_id" => $authUser->school_id
+        ]);
+        if (!$pointCategoryContext) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No se encontró la asignación de categoría de puntos.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        if(isset($data["pointCategoryId"])) {
+            $fieldsUpdated["point_category_id"] = $data["pointCategoryId"];
+        }
+
+        if(isset($data["course"])) {
+            $fieldsUpdated["grade_id"] = $data["course"];
+        }
+
+        if(isset($data["subject"])) {
+            $fieldsUpdated["subject_id"] = $data["subject"];
+        }
+
+        $updated = $this->pointCategoryContextRepository->updatePointCategoryContext($pointCategoryContextId, $authUser->school_id, $fieldsUpdated);
+        if (!$updated) {
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar la asignación de categoría de puntos.',
+                'errors' => ['Inténtalo de nuevo más tarde.'],
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return $this->getPointsCategories('Asignación de categoría de puntos actualizada.');
+
     }
 }

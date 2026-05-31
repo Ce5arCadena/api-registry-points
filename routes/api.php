@@ -111,7 +111,7 @@ Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
         Route::get('/', 'index');
         Route::post('/', 'store');
         Route::get('{category}', 'show');
-        Route::put('{category}', 'update');
+        Route::patch('{category}', 'update');
         Route::delete('{category}', 'destroy');
     });
 
