@@ -124,4 +124,20 @@ class TeacherController extends Controller
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
+
+    /**
+     * Lista de cursos asociados al maestro.
+     */
+    public function myGrades(): JsonResponse|ResourceCollection
+    {
+        try {
+            $user = Auth::user();
+            return $this->teacherService->getMyGrades($user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar tus cursos.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
 }

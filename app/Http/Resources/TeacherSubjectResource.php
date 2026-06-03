@@ -17,7 +17,7 @@ class TeacherSubjectResource extends JsonResource
         return [
             "id"=> $this->id,
             "teacher" => new TeacherResource($this->teacher),
-            "grade" => new GradeResource($this->grade),
+            // "grade" => new GradeResource($this->grade),
             "academic_year" => $this->academic_year,
             "status" => $this->status,
             'created_at' => $this->created_at,

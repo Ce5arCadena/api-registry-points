@@ -176,6 +176,23 @@ class TeacherService {
         ]);
     }
 
+    public function getMyGrades(User $user) {
+        $teacherId = $this->teacherRepository->getTeacherByUserId($user->id, $user->school_id);
+        if (!$teacherId) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No se encontró un maestro asociado al usuario.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $teachers = $this->teacherRepository->getMyGrades($teacherId->id, $user->school_id);
+
+        return response()->json([
+            'message' => 'Lista de tus cursos.',
+            'data' => $teachers
+        ]);
+    }
+
     public function getAll(User $user) {
         $teachers = $this->teacherRepository->getAllTeachers($user->school_id);
         
