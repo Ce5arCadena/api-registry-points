@@ -133,7 +133,7 @@ Route::middleware(['auth:sanctum','abilities:teacher:get_grades'])
     ->prefix('teacher')
     ->controller(TeacherController::class)
     ->group(function() {
-        Route::get('/grades', 'myGrades');
+        Route::get('/courses', 'myGrades');
     });
 
 // Obtiene los estudiantes asociados a un curso según el maestro que consulta

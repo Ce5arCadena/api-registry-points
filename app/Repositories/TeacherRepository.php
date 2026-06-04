@@ -42,12 +42,9 @@ class TeacherRepository {
 
     public function getMyGrades(int $teacherId, int $schoolId) {
         return Teacher::where('school_id', $schoolId)
-            ->whereHas('subjectAssignments', function($q) use ($teacherId, $schoolId) {
-                $q->where('teacher_id', $teacherId)
-                    ->where('school_id', $schoolId);
-            })
-            ->get()
-            ->toResourceCollection();
+            ->with('grades')
+            ->where('id', $teacherId)
+            ->first();
     }
 
     public function getAllTeachersActive(int $schoolId) {
