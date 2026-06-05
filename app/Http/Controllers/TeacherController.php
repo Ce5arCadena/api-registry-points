@@ -140,4 +140,20 @@ class TeacherController extends Controller
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
+
+    /**
+     * Lista de asignaturas asociadas al maestro.
+     */
+    public function mySubjects(): JsonResponse|ResourceCollection
+    {
+        try {
+            $user = Auth::user();
+            return $this->teacherService->getMySubjects($user);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar tus asignaturas.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
 }
