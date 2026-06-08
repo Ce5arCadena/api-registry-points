@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\SearchRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
@@ -144,11 +145,11 @@ class TeacherController extends Controller
     /**
      * Lista de asignaturas asociadas al maestro.
      */
-    public function mySubjects(): JsonResponse|ResourceCollection
+    public function mySubjects(Request $request): JsonResponse|ResourceCollection
     {
         try {
             $user = Auth::user();
-            return $this->teacherService->getMySubjects($user);
+            return $this->teacherService->getMySubjects($user, $request);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al listar tus asignaturas.',

@@ -2,6 +2,7 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Requests\SearchRequest;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
@@ -193,7 +194,7 @@ class TeacherService {
         ]);
     }
 
-    public function getMySubjects(User $user) {
+    public function getMySubjects(User $user, Request $request) {
         $teacherId = $this->teacherRepository->getTeacherByUserId($user->id, $user->school_id);
         if (!$teacherId) {
             return response()->json([
@@ -202,7 +203,12 @@ class TeacherService {
             ], JsonResponse::HTTP_NOT_FOUND);
         }
 
-        $teachers = $this->teacherRepository->getMySubjects($teacherId->id, $user->school_id);
+        $courseId = null;
+        if($request->filled('courseId')) {
+            $courseId = $request->query('courseId');
+        }
+
+        $teachers = $this->teacherRepository->getMySubjects($teacherId->id, $user->school_id, $courseId);
 
         return response()->json([
             'message' => 'Lista de tus asignaturas.',

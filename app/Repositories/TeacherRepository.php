@@ -47,9 +47,16 @@ class TeacherRepository {
             ->first();
     }
 
-    public function getMySubjects(int $teacherId, int $schoolId) {
+    public function getMySubjects(int $teacherId, int $schoolId, int | null $courseId = null) {
         return Teacher::where('school_id', $schoolId)
-            ->with('subjects')
+            ->when($courseId, function($query) use ($courseId) {
+                $query->with(['subjects' => function($query) use ($courseId) {
+                    $query->where('grade_id', $courseId);
+                }]);
+            })
+            ->when(!$courseId, function($query) use ($courseId) {
+                $query->with('subjects');
+            })
             ->where('id', $teacherId)
             ->first();
     }
