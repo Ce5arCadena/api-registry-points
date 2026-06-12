@@ -110,10 +110,10 @@ Route::middleware(['auth:sanctum','abilities:teacher:point_categories'])
     ->group(function() {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::patch('/state', 'changeStates');
         Route::get('{category}', 'show');
         Route::patch('{category}', 'update');
         Route::delete('{category}', 'destroy');
-        Route::patch('/state', 'changeStates');
     });
 
 // Rutas de asignación de materias a profesores
