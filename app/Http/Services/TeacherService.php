@@ -178,7 +178,7 @@ class TeacherService {
         ]);
     }
 
-    public function getMyGrades(User $user) {
+    public function getMyGrades(User $user, bool $hasSubjectsAssignment) {
         $teacherId = $this->teacherRepository->getTeacherByUserId($user->id, $user->school_id);
         if (!$teacherId) {
             return response()->json([
@@ -187,7 +187,7 @@ class TeacherService {
             ], JsonResponse::HTTP_NOT_FOUND);
         }
 
-        $teachers = $this->teacherRepository->getMyGrades($teacherId->id, $user->school_id);
+        $teachers = $this->teacherRepository->getMyGrades($teacherId->id, $user->school_id, $hasSubjectsAssignment);
 
         return response()->json([
             'message' => 'Lista de tus cursos.',

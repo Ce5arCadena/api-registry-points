@@ -40,10 +40,20 @@ class TeacherRepository {
             ->toResourceCollection();
     }
 
-    public function getMyGrades(int $teacherId, int $schoolId) {
+    public function getMyGrades(int $teacherId, int $schoolId, bool $hasSubjectsAssignment) {
         return Teacher::where('school_id', $schoolId)
-            ->with(['grades.subjects' => function($query) use ($teacherId) {
-                $query->wherePivot('teacher_id', $teacherId);
+            ->with(['grades.subjects' => function($query) use ($hasSubjectsAssignment, $teacherId) {
+                $query->wherePivot('teacher_id', $teacherId)
+                    ->when($hasSubjectsAssignment, function($query) {
+                        $query->whereExists(function ($sub) {
+                            $sub->select('id')
+                                ->from('point_category_context')
+                                ->whereColumn('point_category_context.subject_id', 'subjects.id')
+                                ->whereColumn('point_category_context.grade_id', 'teacher_subject.grade_id')
+                                ->whereColumn('point_category_context.school_id', 'teacher_subject.school_id')
+                                ->where('point_category_context.status', 'ACTIVE');
+                        });
+                    });
             }])
             ->where('id', $teacherId)
             ->first();

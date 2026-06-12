@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\SearchRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\TeacherService;
+use App\Http\Requests\MyCoursesRequest;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateStatesRequest;
 use App\Http\Requests\UpdateTeacherRequest;
@@ -129,11 +130,12 @@ class TeacherController extends Controller
     /**
      * Lista de cursos asociados al maestro.
      */
-    public function myCourses(): JsonResponse|ResourceCollection
+    public function myCourses(MyCoursesRequest $request): JsonResponse|ResourceCollection
     {
         try {
             $user = Auth::user();
-            return $this->teacherService->getMyGrades($user);
+            $hasSubjectsAssignment = $request->boolean('hasSubjectsAssignment');
+            return $this->teacherService->getMyGrades($user, $hasSubjectsAssignment);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Ocurrió un error al listar tus cursos.',
