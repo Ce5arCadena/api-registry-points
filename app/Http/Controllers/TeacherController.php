@@ -129,7 +129,7 @@ class TeacherController extends Controller
     /**
      * Lista de cursos asociados al maestro.
      */
-    public function myGrades(): JsonResponse|ResourceCollection
+    public function myCourses(): JsonResponse|ResourceCollection
     {
         try {
             $user = Auth::user();

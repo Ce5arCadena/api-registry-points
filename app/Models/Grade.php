@@ -28,7 +28,7 @@ class Grade extends Model
 
     public function teacherAssignments()
     {
-        return $this->hasMany(TeacherSubject::class);
+        return $this->hasMany(TeacherSubject::class, 'teacher_id');
     }
 
     public function teachers()

@@ -64,6 +64,15 @@ Route::middleware(['auth:sanctum','abilities:school:teachers'])
         Route::patch('/state', 'changeStates');
     });
 
+// Obtiene los cursos asociados al maestro
+Route::middleware(['auth:sanctum','abilities:teacher:get_grades'])
+    ->prefix('teacher')
+    ->controller(TeacherController::class)
+    ->group(function() {
+        Route::get('/courses', 'myCourses');
+        Route::get('/subjects', 'mySubjects');
+    });
+
 // Rutas de materias
 Route::middleware(['auth:sanctum','abilities:school:teachers'])
     ->prefix('subjects')
@@ -126,15 +135,6 @@ Route::middleware(['auth:sanctum','abilities:school:teachers_subjects'])
         Route::get('{teacherSubject}', 'show');
         Route::put('{teacherSubject}', 'update');
         Route::delete('{teacherSubject}', 'destroy');
-    });
-
-// Obtiene los cursos asociados al maestro
-Route::middleware(['auth:sanctum','abilities:teacher:get_grades'])
-    ->prefix('teacher')
-    ->controller(TeacherController::class)
-    ->group(function() {
-        Route::get('/courses', 'myGrades');
-        Route::get('/subjects', 'mySubjects');
     });
 
 // Obtiene los estudiantes asociados a un curso según el maestro que consulta

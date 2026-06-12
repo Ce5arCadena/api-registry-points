@@ -8,6 +8,7 @@ use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\TeacherResource;
+use App\Http\Resources\TeacherWithCoursesResource;
 use App\Repositories\TeacherRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

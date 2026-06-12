@@ -42,7 +42,9 @@ class TeacherRepository {
 
     public function getMyGrades(int $teacherId, int $schoolId) {
         return Teacher::where('school_id', $schoolId)
-            ->with('grades')
+            ->with(['grades.subjects' => function($query) use ($teacherId) {
+                $query->wherePivot('teacher_id', $teacherId);
+            }])
             ->where('id', $teacherId)
             ->first();
     }
