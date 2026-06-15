@@ -42,7 +42,11 @@ class TeacherRepository {
 
     public function getMyGrades(int $teacherId, int $schoolId, bool $hasSubjectsAssignment) {
         return Teacher::where('school_id', $schoolId)
-            ->with(['grades.subjects' => function($query) use ($hasSubjectsAssignment, $teacherId) {
+            ->with([
+                'grades' => function($query) {
+                    $query->withCount('students');
+                },
+                'grades.subjects' => function($query) use ($hasSubjectsAssignment, $teacherId) {
                 $query->wherePivot('teacher_id', $teacherId)
                     ->when($hasSubjectsAssignment, function($query) {
                         $query->whereExists(function ($sub) {
