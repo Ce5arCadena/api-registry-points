@@ -18,11 +18,13 @@ class Subject extends Model
 
     protected $table = "subjects";
 
-    public function scopeActive($query) {
+    public function scopeActive($query)
+    {
         return $query->where('status', 'ACTIVE');
     }
 
-    public function pointCategories() {
+    public function pointCategories()
+    {
         return $this->hasMany(PointCategory::class)
             ->where('status', 'ACTIVE');
     }
@@ -39,5 +41,10 @@ class Subject extends Model
     public function grades()
     {
         return $this->belongsToMany(Grade::class, 'teacher_subjects', 'subject_id', 'grade_id')->distinct();
+    }
+
+    public function pointCategoryContexts()
+    {
+        return $this->hasMany(PointCategoryContext::class, 'subject_id');
     }
 }

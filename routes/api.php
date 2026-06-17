@@ -156,4 +156,5 @@ Route::middleware(['auth:sanctum','abilities:teacher:registry_points'])
         Route::get('{registryPoint}', 'show');
         Route::put('{registryPoint}', 'update');
         Route::delete('{registryPoint}', 'destroy');
+        Route::get('/courses/{grade}/subjects/{subject}', 'getRegistryPoints');
     });

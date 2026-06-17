@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\GradeRepository;
 use App\Repositories\SubjectRepository;
@@ -14,7 +15,8 @@ use App\Repositories\TeacherSubjectRepository;
 use App\Http\Requests\StoreRegistryPointRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class RegistryPointService {
+class RegistryPointService
+{
     public function __construct(
         protected GradeRepository $gradeRepository,
         protected SubjectRepository $subjectRepository,
@@ -23,9 +25,10 @@ class RegistryPointService {
         protected PointCategoryRepository $pointCategoryRepository,
         protected RegistryPointRepository $registryPointRepository,
         protected TeacherSubjectRepository $teacherSubjectRepository
-    ) {}    
+    ) {}
 
-    public function registryPoints(StoreRegistryPointRequest $request) {
+    public function registryPoints(StoreRegistryPointRequest $request)
+    {
         $authUser = Auth::user();
         $fields = $request->validated();
 
@@ -61,7 +64,7 @@ class RegistryPointService {
 
             foreach ($value["data"] as $points) {
                 if ($points["points"] > $pointCategory->max_points) {
-                    array_push($errors,"El estudiante con ID {$points['student']} excede el límite de puntos permitidos en la categoría {$value['point_category']}.");
+                    array_push($errors, "El estudiante con ID {$points['student']} excede el límite de puntos permitidos en la categoría {$value['point_category']}.");
                     continue;
                 }
 
@@ -79,6 +82,31 @@ class RegistryPointService {
         return response()->json([
             'message' => count($errors) > 0 ? 'Algunos registros no fueron procesados.' : 'Asignación de puntos procesada',
             'errors' => count($errors) > 0 ? $errors : [],
+        ]);
+    }
+
+    public function getRegistryPoints(Request $request)
+    {
+        $authUser = Auth::user();
+        $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
+
+        $isAuthorized = $this->teacherSubjectRepository->getBySubjectAndteacher($teacher->id, $request->subject, $authUser->school_id);
+        if (!$isAuthorized) {
+            return response()->json([
+                'message' => 'No tienes acceso a este recurso.',
+                'errors' => ['No se encontró esa asignatura asignada a ti en ese curso.'],
+            ], JsonResponse::HTTP_FORBIDDEN);
+        }
+
+        $students = $this->studentRepository->getStudentsByGrade($request->grade, $authUser->school_id);
+        $categories = $this->pointCategoryRepository->getCategoriesBySubjectAndGrade($request->subject, $request->grade, $authUser->school_id);
+
+        return response()->json([
+            'message' => 'Datos de registro de puntos.',
+            'data' => [
+                'students' => $students,
+                'categories' => $categories,
+            ]
         ]);
     }
 }

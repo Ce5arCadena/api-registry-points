@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\RegistryPoint;
 use App\Http\Services\RegistryPointService;
+use App\Http\Requests\RegistryPointsRequest;
 use App\Http\Requests\StoreRegistryPointRequest;
 use App\Http\Requests\UpdateRegistryPointRequest;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RegistryPointController extends Controller
@@ -51,12 +53,16 @@ class RegistryPointController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(RegistryPoint $registryPoint)
+    public function getRegistryPoints(Request $request)
     {
-        //
+        try {
+            return $this->registryPointService->getRegistryPoints($request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al ejecutar la consulta.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

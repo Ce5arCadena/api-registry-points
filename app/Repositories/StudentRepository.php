@@ -21,6 +21,16 @@ class StudentRepository {
         return Student::active()->where('id', $id)->where('school_id', $schoolId)->first();
     }
 
+    public function getStudentsByGrade(int $gradeId, int $schoolId)
+    {
+        return Student::active()
+            ->where('grade_id', $gradeId)
+            ->where('school_id', $schoolId)
+            ->where('status', 'ACTIVE')
+            ->orderBy('name')
+            ->get();
+    }
+
     public function getAll(int $schoolId, ?int $gradeId) {
         return Student::where('school_id', $schoolId)
             ->when($gradeId, function($query) use ($gradeId) {
