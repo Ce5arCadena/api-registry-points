@@ -78,23 +78,61 @@ class RegistryPointService
         $authUser = Auth::user();
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
 
-        $isAuthorized = $this->teacherSubjectRepository->getBySubjectAndteacher($teacher->id, $request->subject, $authUser->school_id);
-        if (!$isAuthorized) {
+        $contexts = $this->pointCategoryContextRepository->getContextsByGradeAndSubject([
+            'grade_id'   => $request->grade,
+            'subject_id' => $request->subject,
+            'school_id'  => $authUser->school_id,
+            'teacher_id' => $teacher->id,
+        ]);
+
+        if ($contexts->isEmpty()) {
             return response()->json([
                 'message' => 'No tienes acceso a este recurso.',
-                'errors' => ['No se encontró esa asignatura asignada a ti en ese curso.'],
+                'errors'  => ['No se encontraron categorías para este curso y asignatura.'],
             ], JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $students = $this->studentRepository->getStudentsByGrade($request->grade, $authUser->school_id);
-        $categories = $this->pointCategoryRepository->getCategoriesBySubjectAndGrade($request->subject, $request->grade, $authUser->school_id);
+        $students   = $this->studentRepository->getStudentsByGrade($request->grade, $authUser->school_id);
+        $contextIds = $contexts->pluck('id')->all();
+        $studentIds = $students->pluck('id')->all();
+
+        $existingPoints = $this->registryPointRepository->getByStudentsAndContexts(
+            $studentIds,
+            $contextIds,
+            Carbon::now()->year
+        );
+
+        // Lookup [student_id][context_id] => points
+        $pointsMap = [];
+        foreach ($existingPoints as $rp) {
+            $pointsMap[$rp->student_id][$rp->point_category_context_id] = $rp->points;
+        }
+
+        $studentsData = $students->map(function ($student) use ($contextIds, $pointsMap) {
+            $registered = [];
+            foreach ($contextIds as $contextId) {
+                $registered[$contextId] = $pointsMap[$student->id][$contextId] ?? null;
+            }
+            return [
+                'id'               => $student->id,
+                'name'             => $student->name,
+                'last_name'        => $student->last_name,
+                'registered_points' => $registered,
+            ];
+        });
+
+        $contextsData = $contexts->map(fn($ctx) => [
+            'id'         => $ctx->id,
+            'name'       => $ctx->pointCategory->name,
+            'max_points' => $ctx->pointCategory->max_points,
+        ]);
 
         return response()->json([
             'message' => 'Datos de registro de puntos.',
-            'data' => [
-                'students' => $students,
-                'categories' => $categories,
-            ]
+            'data'    => [
+                'students'               => $studentsData,
+                'point_category_contexts' => $contextsData,
+            ],
         ]);
     }
 }
