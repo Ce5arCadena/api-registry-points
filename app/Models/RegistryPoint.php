@@ -13,9 +13,9 @@ class RegistryPoint extends Model
     protected $fillable = [
         "points",
         "student_id",
-        "point_category_id",
-        "subject_id",
-        "school_id",
+        "point_category_context_id",
+        "teacher_id",
+        "academic_year",
         "created_at",
         "updated_at"
     ];

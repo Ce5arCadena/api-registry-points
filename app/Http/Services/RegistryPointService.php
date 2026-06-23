@@ -14,6 +14,7 @@ use App\Repositories\PointCategoryRepository;
 use App\Repositories\TeacherSubjectRepository;
 use App\Http\Requests\StoreRegistryPointRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repositories\PointCategoryContextRepository;
 
 class RegistryPointService
 {
@@ -24,7 +25,8 @@ class RegistryPointService
         protected TeacherRepository $teacherRepository,
         protected PointCategoryRepository $pointCategoryRepository,
         protected RegistryPointRepository $registryPointRepository,
-        protected TeacherSubjectRepository $teacherSubjectRepository
+        protected TeacherSubjectRepository $teacherSubjectRepository,
+        protected PointCategoryContextRepository $pointCategoryContextRepository
     ) {}
 
     public function registryPoints(StoreRegistryPointRequest $request)
@@ -33,47 +35,33 @@ class RegistryPointService
         $fields = $request->validated();
 
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
-        // La asignatura debe estarse impartiendo en el curso.
-        $gradeSubject = $this->teacherSubjectRepository->getTeacherSubjectByYear([
-            "teacher_id" => $teacher->id,
-            "grade_id" => $fields["grade"],
-            "subject_id" => $fields["subject"],
-            "school_id" => $authUser->school_id,
-            "year" => Carbon::now()->year
-        ]);
-        if (!$gradeSubject) {
-            return response()->json([
-                'message' => 'Error al procesar la solicitud.',
-                'errors' => ['La asignatura no se está impartiendo en el curso o está inactiva.'],
-            ], JsonResponse::HTTP_NOT_FOUND);
-        }
+        $academicYear = Carbon::now()->year;
 
         $errors = [];
-        foreach ($fields["points"] as $key => $value) {
-            $pointCategory = $this->pointCategoryRepository->getPointCategoryByIdAndSubject([
-                "id" => $value["point_category"],
+        foreach ($fields["points"] as $value) {
+            $pointCategoryContext = $this->pointCategoryContextRepository->getPointCategoryContextById([
+                "id" => $value["point_category_context"],
                 "teacher_id" => $teacher->id,
-                "subject_id" => $fields["subject"],
-                "school_id" => $authUser->school_id
+                "school_id" => $authUser->school_id,
             ]);
 
-            if (!$pointCategory) {
-                array_push($errors, "La categoría de puntos con identificador" . $value["point_category"] . "no se procesó porque no existe o no es permitida para esta asignatura.");
+            if (!$pointCategoryContext) {
+                array_push($errors, "El contexto de categoría con identificador {$value['point_category_context']} no se procesó porque no existe o no es permitido.");
                 continue;
             }
 
             foreach ($value["data"] as $points) {
-                if ($points["points"] > $pointCategory->max_points) {
-                    array_push($errors, "El estudiante con ID {$points['student']} excede el límite de puntos permitidos en la categoría {$value['point_category']}.");
+                if ($points["points"] > $pointCategoryContext->pointCategory->max_points) {
+                    array_push($errors, "El estudiante con ID {$points['student']} excede el límite de puntos permitidos en el contexto de categoría {$value['point_category_context']}.");
                     continue;
                 }
 
                 $this->registryPointRepository->createRegistryPoint([
                     "student_id" => $points["student"],
+                    "point_category_context_id" => $pointCategoryContext->id,
+                    "teacher_id" => $teacher->id,
                     "points" => $points["points"],
-                    "point_category_id" => $pointCategory->id,
-                    "subject_id" => $fields["subject"],
-                    "school_id" => $authUser->school_id,
+                    "academic_year" => $academicYear,
                     "updated_at" => now(),
                 ]);
             }
