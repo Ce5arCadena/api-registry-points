@@ -34,26 +34,14 @@ class StoreRegistryPointRequest extends FormRequest
                     ->where("school_id", $authUser->school_id),
             ],
             "points" => "required|array|min:1",
-            "points.*.point_category_context" => [
-                "required",
-                "integer",
-                "min:1",
-                Rule::exists("point_category_context","id")
-                    ->where('status', 'ACTIVE')
-                    ->where("school_id", $authUser->school_id)
-                    ->where("grade_id", $this->input("grade")),
-            ],
-            "points.*.data" => "required|array|min:1",
-            "points.*.data.*.points" => "required|integer|min:1",
-            "points.*.data.*.student" => [
+            "points.*.id" => [
                 "required",
                 "integer",
                 "min:1",
                 Rule::exists("students","id")
                     ->where('status', 'ACTIVE')
-                    ->where("school_id", $authUser->school_id)
-                    ->where("grade_id", $this->input("grade")),
-            ],
+                    ->where("school_id", $authUser->school_id),
+            ]
         ];
     }
 
@@ -69,23 +57,10 @@ class StoreRegistryPointRequest extends FormRequest
             'points.array' => 'El formato de puntos no es válido.',
             'points.min' => 'Debe incluir al menos una categoría de puntos.',
 
-            'points.*.point_category_context.required' => 'El contexto de categoría de puntos es obligatorio.',
-            'points.*.point_category_context.integer' => 'El contexto de categoría de puntos debe ser un número entero.',
-            'points.*.point_category_context.min' => 'El contexto de categoría de puntos debe ser mayor a 0.',
-            'points.*.point_category_context.exists' => 'El contexto de categoría seleccionado no es válido, no está activo o no pertenece al grado especificado.',
-
-            'points.*.data.required' => 'Debe proporcionar datos de estudiantes para esta categoría.',
-            'points.*.data.array' => 'El formato de datos no es válido.',
-            'points.*.data.min' => 'Debe incluir al menos un estudiante.',
-
-            'points.*.data.*.points.required' => 'Los puntos del estudiante son obligatorios.',
-            'points.*.data.*.points.integer' => 'Los puntos deben ser un número entero.',
-            'points.*.data.*.points.min' => 'Los puntos deben ser mayor a 0.',
-
-            'points.*.data.*.student.required' => 'El estudiante es obligatorio.',
-            'points.*.data.*.student.integer' => 'El ID del estudiante debe ser un número entero.',
-            'points.*.data.*.student.min' => 'El ID del estudiante debe ser mayor a 0.',
-            'points.*.data.*.student.exists' => 'El estudiante seleccionado no es válido, no está activo o no pertenece al grado especificado.',
+            'points.*.id.required' => 'El estudiante es obligatorio.',
+            'points.*.id.integer' => 'El id del estudiante debe ser un número entero.',
+            'points.*.id.min' => 'El id del estudiante debe ser mayor a 0.',
+            'points.*.id.exists' => 'El estudiante no es válido, no está activo.',
         ];
     }
 }

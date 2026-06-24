@@ -32,30 +32,32 @@ class RegistryPointService
     public function registryPoints(StoreRegistryPointRequest $request)
     {
         $authUser = Auth::user();
-        $fields = $request->validated();
 
         $teacher = $this->teacherRepository->getTeacherByUserId($authUser->id, $authUser->school_id);
         $academicYear = Carbon::now()->year;
 
         $errors = [];
-        foreach ($fields["points"] as $value) {
-            $pointCategoryContext = $this->pointCategoryContextRepository->getPointCategoryContextById([
-                "id" => $value["point_category_context"],
-                "teacher_id" => $teacher->id,
-                "school_id" => $authUser->school_id,
-            ]);
+        foreach ($request->input("points") as $value) {
+            dd($value, $value["registered_points"]);
+            // válidamos que exista la categoría de puntos en cada elemento por cada estudiante
+            foreach($value["registered_points"] as $idCategoryPoint => $valueCategoryPoint) {
+                $pointCategoryContext = $this->pointCategoryContextRepository->getPointCategoryContextByCategoryId([
+                    "point_category_id" => $idCategoryPoint,
+                    "teacher_id" => $teacher->id,
+                    "school_id" => $authUser->school_id,
+                ]);
 
-            if (!$pointCategoryContext) {
-                array_push($errors, "El contexto de categoría con identificador {$value['point_category_context']} no se procesó porque no existe o no es permitido.");
-                continue;
-            }
-
-            foreach ($value["data"] as $points) {
-                if ($points["points"] > $pointCategoryContext->pointCategory->max_points) {
-                    array_push($errors, "El estudiante con ID {$points['student']} excede el límite de puntos permitidos en el contexto de categoría {$value['point_category_context']}.");
+                if (!$pointCategoryContext) {
+                    array_push($errors, "El contexto de categoría con identificador {$idCategoryPoint} no se procesó porque no existe o no es permitido.");
                     continue;
                 }
 
+                if ($valueCategoryPoint > $pointCategoryContext->pointCategory->max_points) {
+                    array_push($errors, "El estudiante con ID {$points['student']} excede el límite de puntos permitidos en el contexto de categoría {$pointCategoryContext->pointCategory->name}.");
+                    continue;
+                }
+
+                // Ajustar el guardado de los puntos con la nueva estructura. Puede ser insertar o actualizar
                 $this->registryPointRepository->createRegistryPoint([
                     "student_id" => $points["student"],
                     "point_category_context_id" => $pointCategoryContext->id,

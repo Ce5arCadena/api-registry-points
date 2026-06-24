@@ -30,6 +30,18 @@ class PointCategoryContextRepository {
             ->first();
     }
 
+    public function getPointCategoryContextByCategoryId(array $fields) {
+        return PointCategoryContext::active()
+            ->where('point_category_id', $fields['point_category_id'])
+            ->where('school_id', $fields['school_id'])
+            ->whereHas('pointCategory', function($query) use ($fields) {
+                $query->where('teacher_id', $fields['teacher_id'])
+                    ->where('school_id', $fields['school_id'])
+                    ->where('status', 'ACTIVE');
+            })
+            ->first();
+    }
+
     public function updatePointCategoryContext(int $id, int $school_id, array $fields) {
         return PointCategoryContext::where('id', $id)->where('school_id', $school_id)->update($fields);
     }
