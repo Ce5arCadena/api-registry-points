@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\GradeResource;
 use App\Repositories\GradeRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class GradeService {
     public function __construct(protected GradeRepository $gradeRepository) {}
@@ -80,7 +81,7 @@ class GradeService {
         ]);
     }
 
-    public function destroy(int $grade, User $user): JsonResponse {
+    public function destroy(int $grade, User $user): JsonResponse | ResourceCollection {
         $gradeExist = $this->gradeRepository->getGradeById($grade, $user->school_id);
         if (!$gradeExist) {
             return response()->json([
@@ -93,9 +94,10 @@ class GradeService {
             'status' => 'INACTIVE'
         ]);
 
-        return response()->json([
-            'message' => 'Curso eliminado éxitosamente.',
-            'data' => new GradeResource($gradeExist->fresh())
+        $grades = $this->gradeRepository->getGrades($user->school_id);
+
+        return $grades->additional([
+            'message' => 'Curso eliminado éxitosamente.'
         ]);
     }
 

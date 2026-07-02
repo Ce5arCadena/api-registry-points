@@ -18,6 +18,7 @@ class TeacherResource extends JsonResource
             "id" => $this->id,
             "full_name" => $this->full_name,
             "document" => $this->document,
+            "user" => new UserResource($this->user),
             "phone" => $this->phone,
             "status" => $this->status,
             "grades" => GradeResourceWithoutSubjects::collection($this->grades),

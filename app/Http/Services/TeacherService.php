@@ -8,7 +8,6 @@ use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\TeacherResource;
-use App\Http\Resources\TeacherWithCoursesResource;
 use App\Repositories\TeacherRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -171,10 +170,10 @@ class TeacherService {
             'status' => 'INACTIVE'
         ]);
 
-        return response()->json([
-            'message' => 'Maestro eliminado éxitosamente.',
-            'errors' => [],
-            'data' => new TeacherResource($teacher->fresh())
+        $teachers = $this->teacherRepository->getAllTeachers($user->school_id);
+
+        return $teachers->additional([
+            'message' => 'Lista de maestros.',
         ]);
     }
 
@@ -221,7 +220,7 @@ class TeacherService {
         $teachers = $this->teacherRepository->getAllTeachers($user->school_id);
         
         return $teachers->additional([
-            'message' => 'Lista de colegios.',
+            'message' => 'Lista de maestros.',
         ]);
     }
 

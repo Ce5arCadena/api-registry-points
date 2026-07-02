@@ -99,7 +99,7 @@ class GradeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $grade): JsonResponse
+    public function destroy(int $grade): JsonResponse | ResourceCollection
     {
         try {
             $user = Auth::user();

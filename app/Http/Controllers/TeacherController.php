@@ -114,7 +114,7 @@ class TeacherController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $teacher): JsonResponse
+    public function destroy(int $teacher): JsonResponse|ResourceCollection
     {
         try {
             $user = Auth::user();
