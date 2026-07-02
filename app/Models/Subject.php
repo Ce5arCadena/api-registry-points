@@ -23,11 +23,6 @@ class Subject extends Model
         return $query->where('status', 'ACTIVE');
     }
 
-    public function pointCategories()
-    {
-        return $this->hasMany(PointCategory::class)
-            ->where('status', 'ACTIVE');
-    }
     public function teacherAssignments()
     {
         return $this->hasMany(TeacherSubject::class);

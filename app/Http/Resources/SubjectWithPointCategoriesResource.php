@@ -11,7 +11,6 @@ class SubjectWithPointCategoriesResource extends JsonResource {
         return [
             "id"=> $this->id,
             "name" => $this->name,
-            "pointCategories" => $this->pointCategories
         ];
     }
 }
