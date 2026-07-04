@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\GradeRepository;
 use App\Repositories\StudentRepository;
@@ -9,8 +10,8 @@ use App\Http\Resources\StudentResource;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStatesRequest;
 use App\Http\Requests\UpdateStudentRequest;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class StudentService {
     public function __construct(
@@ -34,15 +35,14 @@ class StudentService {
         ]);
     }
 
-    public function updateStudent(UpdateStudentRequest $request, int $student) {
-        $data = $request->validated();
+    public function updateStudent(UpdateStudentRequest $request, int $student): ResourceCollection {
         $userAuth = Auth::user();
+        $data = $request->validated();
 
         $this->studentRepository->updateStudent($student, $userAuth->school_id, [...$data, "grade_id" => $data['grade']]);
-        $studentUpdated = $this->studentRepository->getStudentById($student, $userAuth->school_id);
-        return response()->json([
-            'message' => 'Estudiante actualizado.',
-            'data' => new StudentResource( $studentUpdated)
+
+        return $this->studentRepository->getAll($userAuth->school_id, $data['grade'])->additional([
+            'message' => 'Estudiante actualizado.'
         ]);
     }
 

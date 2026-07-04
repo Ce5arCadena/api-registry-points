@@ -49,7 +49,8 @@ class TeacherRepository
 
     public function getMyGrades(int $teacherId, int $schoolId, bool $hasSubjectsAssignment)
     {
-        return Teacher::where('school_id', $schoolId)
+        return Teacher::active()
+            ->where('school_id', $schoolId)
             ->with([
                 'grades' => function ($query) {
                     $query->withCount('students');
@@ -77,7 +78,8 @@ class TeacherRepository
 
     public function getMySubjects(int $teacherId, int $schoolId, int | null $courseId = null)
     {
-        return Teacher::where('school_id', $schoolId)
+        return Teacher::active()
+            ->where('school_id', $schoolId)
             ->when($courseId, function ($query) use ($courseId) {
                 $query->with(['subjects' => function ($query) use ($courseId) {
                     $query->where('grade_id', $courseId);

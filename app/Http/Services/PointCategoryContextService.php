@@ -116,7 +116,7 @@ class PointCategoryContextService {
         $user = Auth::user();
         [$pointCategoriesById] = $this->pointCategoryContextRepository->updateStates(array_values($ids["ids"]), $user->school_id);
         $unprocessedPointCategories = array_diff(array_values($ids["ids"]), $pointCategoriesById->pluck('id')->toArray());
-        $message = count($unprocessedPointCategories) > 0 ? "Ids de registros que no existen => " . implode(",", $unprocessedPointCategories) : "Asignaciones de categorías de puntos actualizadas";
+        $message = count($unprocessedPointCategories) > 0 ? "Ids de registros que no existen => " . implode(",", $unprocessedPointCategories) : "Categoría de puntos cambiada de estado.";
 
         return $this->getPointsCategories($message);
     }

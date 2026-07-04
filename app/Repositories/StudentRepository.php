@@ -18,7 +18,7 @@ class StudentRepository {
     }
 
     public function getStudentById(int $id, int $schoolId) {
-        return Student::active()->where('id', $id)->where('school_id', $schoolId)->first();
+        return Student::where('id', $id)->where('school_id', $schoolId)->first();
     }
 
     public function getStudentsByGrade(int $gradeId, int $schoolId)

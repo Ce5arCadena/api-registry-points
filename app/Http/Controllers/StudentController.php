@@ -62,7 +62,7 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStudentRequest $request, int $student)
+    public function update(UpdateStudentRequest $request, int $student): ResourceCollection|JsonResponse
     {
         try {
             return $this->studentService->updateStudent($request, $student);
