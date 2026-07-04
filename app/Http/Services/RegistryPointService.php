@@ -38,7 +38,6 @@ class RegistryPointService
 
         $errors = [];
         foreach ($request->input("points") as $value) {
-            dd($value, $value["registered_points"]);
             // válidamos que exista la categoría de puntos en cada elemento por cada estudiante
             foreach($value["registered_points"] as $idCategoryPoint => $valueCategoryPoint) {
                 $pointCategoryContext = $this->pointCategoryContextRepository->getPointCategoryContextByCategoryId([
@@ -53,18 +52,17 @@ class RegistryPointService
                 }
 
                 if ($valueCategoryPoint > $pointCategoryContext->pointCategory->max_points) {
-                    array_push($errors, "El estudiante con ID {$points['student']} excede el límite de puntos permitidos en el contexto de categoría {$pointCategoryContext->pointCategory->name}.");
+                    array_push($errors, "El estudiante con ID {$value['id']} excede el límite de puntos permitidos en el contexto de categoría {$pointCategoryContext->pointCategory->name}.");
                     continue;
                 }
 
                 // Ajustar el guardado de los puntos con la nueva estructura. Puede ser insertar o actualizar
                 $this->registryPointRepository->createRegistryPoint([
-                    "student_id" => $points["student"],
+                    "points" => $valueCategoryPoint,
+                    "academic_year" => $academicYear,
+                    "student_id" => $value["id"],
                     "point_category_context_id" => $pointCategoryContext->id,
                     "teacher_id" => $teacher->id,
-                    "points" => $points["points"],
-                    "academic_year" => $academicYear,
-                    "updated_at" => now(),
                 ]);
             }
         }

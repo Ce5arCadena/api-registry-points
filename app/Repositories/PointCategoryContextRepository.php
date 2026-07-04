@@ -32,7 +32,7 @@ class PointCategoryContextRepository {
 
     public function getPointCategoryContextByCategoryId(array $fields) {
         return PointCategoryContext::active()
-            ->where('point_category_id', $fields['point_category_id'])
+            ->where('id', $fields['point_category_id'])
             ->where('school_id', $fields['school_id'])
             ->whereHas('pointCategory', function($query) use ($fields) {
                 $query->where('teacher_id', $fields['teacher_id'])
