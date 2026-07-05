@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Teacher;
+use App\Models\PointCategory;
+use App\Models\PointCategoryContext;
 
 class TeacherRepository
 {
@@ -90,6 +92,27 @@ class TeacherRepository
             })
             ->where('id', $teacherId)
             ->first();
+    }
+
+    public function getInfoTeacher(int $teacherId, int $schoolId) {
+        $pointCategoriesCount = PointCategory::active()
+            ->where('teacher_id', $teacherId)
+            ->where('school_id', $schoolId)
+            ->where('status', 'ACTIVE')
+            ->count();
+
+        $hasPoincategoryContext = PointCategoryContext::whereHas('pointCategory', function($query) use ($teacherId, $schoolId) {
+                $query->where('teacher_id', $teacherId)
+                    ->where('school_id', $schoolId)
+                    ->where('status', 'ACTIVE');
+            })
+            ->where('status', 'ACTIVE')
+            ->count();
+
+        return [
+            'pointCategoriesCount' => $pointCategoriesCount,
+            'hasPoincategoryContext' => $hasPoincategoryContext
+        ];
     }
 
     public function getAllTeachersActive(int $schoolId)

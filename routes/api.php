@@ -72,6 +72,7 @@ Route::middleware(['auth:sanctum','abilities:teacher:get_grades'])
         // Puede pasarse un parámetro hasSubjectsAssignment y si está presente, obtener el curso con asignaturas y cada asignatura con su asignación de categoria de puntos si existe
         Route::get('/courses', 'myCourses');
         Route::get('/subjects', 'mySubjects');
+        Route::get('/info/dashboard', 'getInfoTeacher');
     });
 
 // Rutas de materias

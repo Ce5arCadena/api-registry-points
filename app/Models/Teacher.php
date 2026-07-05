@@ -43,4 +43,9 @@ class Teacher extends Model
     {
         return $this->belongsToMany(Grade::class, 'teacher_subject')->distinct();
     }
+
+    public function pointCategories()
+    {
+        return $this->hasMany(PointCategory::class);
+    }
 }

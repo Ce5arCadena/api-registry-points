@@ -159,4 +159,20 @@ class TeacherController extends Controller
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
+
+    /**
+     * Lista de datos del maestro para el dashboard.
+     */
+    public function getInfoTeacher(Request $request): JsonResponse|ResourceCollection
+    {
+        try {
+            $user = Auth::user();
+            return $this->teacherService->getInfoTeacher($user, $request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Ocurrió un error al listar los datos del maestro.',
+                'errors' => [$e->getMessage()]
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
 }

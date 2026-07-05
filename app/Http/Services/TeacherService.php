@@ -234,4 +234,21 @@ class TeacherService {
             'data' => $searchTeachers
         ]);
     }
+    
+    public function getInfoTeacher(User $user, Request $request) {
+        $teacherId = $this->teacherRepository->getTeacherByUserId($user->id, $user->school_id);
+        if (!$teacherId) {
+            return response()->json([
+                'message' => 'Error al procesar la solicitud.',
+                'errors' => ['No se encontró un maestro asociado al usuario.'],
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $teachers = $this->teacherRepository->getInfoTeacher($teacherId->id, $user->school_id);
+
+        return response()->json([
+            'message' => 'Lista de datos del maestro.',
+            'data' => $teachers
+        ]);
+    }
 }
