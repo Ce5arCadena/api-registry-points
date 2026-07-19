@@ -52,4 +52,12 @@ class User extends Authenticatable
     public function scopeActive($query) {
         return $query->where('status', 'ACTIVE');
     }
+
+    public function teacher() {
+        return $this->hasOne(Teacher::class);
+    }
+
+    public function school() {
+        return $this->hasOne(School::class);
+    }
 }

@@ -14,8 +14,10 @@ class AuthService {
         $user = $this->existUser($data);
 
         $token = '';
+        $nameUser = '';
         if ($user->role === 'SUPERADMIN') {
-            $token = $user->createToken('api-token', ['admin:schools'])->plainTextToken;    
+            $token = $user->createToken('api-token', ['admin:schools'])->plainTextToken;
+            $nameUser = 'SUPERADMIN';
         } else if( $user->role === 'SCHOOL') {
             $token = $user->createToken('api-token', [
                 'school:students',
@@ -25,6 +27,7 @@ class AuthService {
                 'school:teachers_subjects',
                 'school:info'
             ])->plainTextToken;
+            $nameUser = $user->school->name;
         } else if( $user->role === 'TEACHER') {
             $token = $user->createToken('api-token', [
                 'teacher:get_grades',
@@ -32,6 +35,7 @@ class AuthService {
                 'teacher:point_categories',
                 'teacher:grades.view_students',
             ])->plainTextToken;
+            $nameUser = $user->teacher->full_name;
         } else {
             $token = $user->createToken('api-token')->plainTextToken;
         }
@@ -41,6 +45,7 @@ class AuthService {
             'data' => [
                 'token' => $token,
                 'rol' => $user->role,
+                'name' => $nameUser
             ]
         ]);
     }
